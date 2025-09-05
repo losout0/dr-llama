@@ -2,7 +2,7 @@ langchain
 langgraph
 langchain_community
 langchain_huggingface
-faiss-gpu # Ou faiss-gpu se você tiver uma GPU NVIDIA configurada
+faiss-cpu
 pypdf # Para carregar documentos PDF
 streamlit
 ollama
