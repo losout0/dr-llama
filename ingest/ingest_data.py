@@ -1,6 +1,7 @@
 import os
 import requests
 from tqdm import tqdm
+from pathlib import Path
 
 from langchain_community.document_loaders import PyPDFLoader, DirectoryLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -8,8 +9,9 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 
 # Definindo os caminhos
-DATA_PATH = "data/raw"
-DB_FAISS_PATH = "vectorstores/db_faiss"
+PROJECT_ROOT = Path(__file__).parent.parent
+DATA_PATH = str(PROJECT_ROOT / "data" / "raw")
+DB_FAISS_PATH = str(PROJECT_ROOT / "vectorstores" / "db_faiss")
 
 SOURCES = [
     {
