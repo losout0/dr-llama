@@ -1,9 +1,28 @@
+# Core LangChain
 langchain
 langgraph
 langchain_community
+
+# Embeddings e Modelos
 langchain_huggingface
+sentence-transformers 
+hf_transfer       
+hf_xet
+
+# Vector Store
 faiss-cpu
-pypdf # Para carregar documentos PDF
+
+# Web App
 streamlit
+
+# Utilitários
+pypdf
+python-dotenv
+requests
+tqdm
+
+# LLM Local
 ollama
+
+# Avaliação
 ragas
