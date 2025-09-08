@@ -2,6 +2,8 @@
 langchain
 langgraph
 langchain_community
+langchain-google-genai
+langchain-ollama
 
 # Embeddings e Modelos
 langchain_huggingface
