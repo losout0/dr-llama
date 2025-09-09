@@ -1,9 +1,15 @@
+import sys
+from pathlib import Path
 from langchain_core.prompts import ChatPromptTemplate
 from pydantic import BaseModel, Field
 from typing import List, Literal
 from langchain_core.documents import Document
 
-from ..utils import create_llm
+src_path = str(Path(__file__).resolve().parent)
+if src_path not in sys.path:
+    sys.path.append(src_path)
+
+from utils import create_llm
 
 class FaithfulnessCheck(BaseModel):
     """

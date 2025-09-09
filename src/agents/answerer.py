@@ -1,10 +1,15 @@
+import sys
 from pathlib import Path
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from typing import List
 from langchain_core.documents import Document
 
-from ..utils import create_llm
+src_path = str(Path(__file__).resolve().parent)
+if src_path not in sys.path:
+    sys.path.append(src_path)
+    
+from utils import create_llm
 
 def format_docs_for_answerer(docs: List[Document]) -> str:
     """
