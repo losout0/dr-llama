@@ -1,114 +1,159 @@
 import os
+import re
+from pathlib import Path
 import requests
 from tqdm import tqdm
-from pathlib import Path
-
-from langchain_community.document_loaders import PyPDFLoader, DirectoryLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.vectorstores import FAISS
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_core.documents import Document
+from typing import List, Dict, Any
 
-# Definindo os caminhos
 PROJECT_ROOT = Path(__file__).parent.parent
 DATA_PATH = str(PROJECT_ROOT / "data" / "raw")
 DB_FAISS_PATH = str(PROJECT_ROOT / "vectorstores" / "db_faiss")
 
 SOURCES = [
     {
-        "name": "constituicao_federal.pdf",
-        "url": "https://www2.senado.leg.br/bdsf/bitstream/handle/id/685819/CF88_EC135_2025_separata.pdf",
-        "pretty_name": "Constituição Federal"
+        "file_name": "vademecum.pdf",
+        "download_url": "https://www2.senado.leg.br/bdsf/bitstream/handle/id/685991/Vade_mecum_EC134_2024.pdf",
+        "pretty_name": "Vade Mecum 2025",
+        "parser_type": "vade_mecum",
     },
-    {
-        "name": "codigo_defesa_consumidor.pdf",
-        "url": "https://www2.senado.leg.br/bdsf/bitstream/handle/id/533814/cdc_e_normas_correlatas_2ed.pdf",
-        "pretty_name": "Código de defesa do consumidor"
-    }
 ]
 
-def download_files():
+def parse_vade_mecum(file_path: Path) -> List[Document]:
+    file_path = Path(file_path)
+    loader = PyPDFLoader(str(file_path))
+    pages = loader.load()
+    full_text = "\n".join([page.page_content for page in pages])
+
+    law_title_regex = r'\n([A-ZÇÃÕÁÉÍÓÚ]{5,}(?:\s+(?:DE|DA|DO)\s+[A-ZÇÃÕÁÉÍÓÚ]+)*\s*)\n'
+    law_splits = re.split(law_title_regex, full_text)
+
+    if len(law_splits) < 3:
+        law_splits = ["Vade Mecum Completo", full_text]
+
+    article_chunks = []
+    for i in range(1, len(law_splits), 2):
+        law_title = law_splits[i].strip()
+        law_text = law_splits[i+1]
+        
+        article_splits = re.split(r'(?=Art\.\s\d+º(?:-\w+)*)', law_text)
+        if article_splits and len(article_splits[0].strip()) < 100:
+            article_splits.pop(0)
+
+        for article_text in article_splits:
+            match = re.search(r'Art\.\s(\d+º(?:-\w+)*)', article_text)
+            article_number = match.group(1) if match else "N/A"
+            article_chunks.append(Document(
+                page_content=article_text.strip(),
+                metadata={
+                    "source_file": file_path.name,
+                    "pretty_name": law_title,
+                    "article": article_number
+                }
+            ))
+    print(f"  -> Extraídos {len(article_chunks)} artigos.")
+    return article_chunks
+
+def parse_simple_law(file_path: Path, source_info: Dict[str, Any]) -> List[Document]:
+    file_path = Path(file_path)
+    loader = PyPDFLoader(str(file_path))
+    pages = loader.load()
+    full_text = " ".join([page.page_content for page in pages])
+    full_text = re.sub(r'\s*\n\s*', ' ', full_text)
+
+    article_splits = re.split(r'(?=Art\.\s\d+º)', full_text)
+    if article_splits and len(article_splits[0].strip()) < 50:
+        article_splits.pop(0)
+
+    article_chunks = []
+    for article_text in article_splits:
+        match = re.search(r'Art\.\s(\d+º(?:-\w+)*)', article_text)
+        article_number = match.group(1) if match else "N/A"
+        article_chunks.append(Document(
+            page_content=article_text.strip(),
+            metadata={
+                "source_file": file_path.name,
+                "pretty_name": source_info.get("pretty_name", file_path.stem),
+                "article": article_number
+            }
+        ))
+    print(f"  -> Extraídos {len(article_chunks)} artigos.")
+    return article_chunks
+
+# --- FUNÇÃO PRINCIPAL DE INGESTÃO ---
+
+def create_vector_db():
     """
-    Verifica se os arquivos de dados existem e, caso contrário, faz o download.
+    Função principal que orquestra a ingestão de todos os documentos
+    definidos na lista SOURCES, usando o parser apropriado para cada um.
     """
-    print("Verificando a existência dos arquivos de dados...")
-    os.makedirs(DATA_PATH, exist_ok=True)
+    print("\n--- INICIANDO PROCESSO DE INGESTÃO DE DOCUMENTOS ---")
+    all_chunks = []
 
     for source in SOURCES:
-        file_path = os.path.join(DATA_PATH, source["name"])
-        if not os.path.exists(file_path):
-            print(f"Arquivo '{source['name']}' não encontrado. Baixando de {source['url']}...")
+        file_name = source["file_name"]
+        file_path = os.path.join(DATA_PATH,file_name)
+        download_url = source.get("download_url")
+        
+        if download_url and not os.path.isfile(file_path):
+            print(f"Baixando '{file_name}' de '{download_url}'...")
             try:
-                response = requests.get(source["url"], stream=True)
-                response.raise_for_status()  # Lança um erro para respostas ruins (4xx ou 5xx)
-
+                response = requests.get(download_url, stream=True)
+                response.raise_for_status()
                 total_size = int(response.headers.get('content-length', 0))
-                block_size = 1024  # 1 KB
-
+                block_size = 1024
+                
                 with open(file_path, 'wb') as f, tqdm(
-                    total=total_size, unit='iB', unit_scale=True, desc=source["name"]
+                    total=total_size, unit='iB', unit_scale=True, desc=file_name
                 ) as pbar:
                     for data in response.iter_content(block_size):
                         pbar.update(len(data))
                         f.write(data)
-                
-                if total_size != 0 and pbar.n != total_size:
-                    print(f"ERRO: Download de '{source['name']}' incompleto.")
-                    os.remove(file_path) # Remove o arquivo parcial
-                else:
-                    print(f"Download de '{source['name']}' concluído com sucesso.")
-
+                print(f"Download de '{file_name}' concluído.")
             except requests.exceptions.RequestException as e:
-                print(f"ERRO ao baixar '{source['name']}': {e}")
-                if os.path.exists(file_path):
-                    os.remove(file_path) # Limpa arquivos corrompidos/parciais
-        else:
-            print(f"Arquivo '{source['name']}' já existe. Pulando o download.")
-
-
-def create_vector_db():
-    """
-    Cria o banco de dados de vetores a partir dos PDFs na pasta de dados,
-    adicionando metadados personalizados (pretty_name) a cada documento.
-    """
-    print("\nIniciando a criação do banco de dados de vetores com metadados personalizados...")
-
-    all_docs_with_metadata = []
-    
-    for source in SOURCES:
-        file_path = os.path.join(DATA_PATH, source["name"])
-        loader = PyPDFLoader(str(file_path))
-        documents = loader.load()
+                print(f"ERRO ao baixar '{file_name}': {e}. Pulando.")
+                continue
+            
+        if not os.path.isfile(file_path):
+            print(f"AVISO: Ficheiro '{file_name}' não encontrado em '{DATA_PATH}'. Pulando.")
+            continue
         
-        for doc in documents:
-            doc.metadata["pretty_name"] = source["pretty_name"]
-            doc.metadata["source"] = source["name"] 
+        print(f"\nProcessando ficheiro: {file_name}")
+        parser_type = source.get("parser_type", "simple_law")
 
-        all_docs_with_metadata.extend(documents)
-        print(f"Carregado e processado: {source['pretty_name']} ({len(documents)} páginas)")
+        if parser_type == "vade_mecum":
+            chunks = parse_vade_mecum(file_path)
+        elif parser_type == "simple_law":
+            chunks = parse_simple_law(file_path, source)
+        else:
+            print(f"AVISO: Tipo de parser '{parser_type}' desconhecido. Pulando ficheiro.")
+            continue
+        
+        all_chunks.extend(chunks)
 
-    if not all_docs_with_metadata:
-        print("Nenhum documento foi carregado. Verifique a pasta de dados e os arquivos.")
+    if not all_chunks:
+        print("\nERRO: Nenhum chunk foi criado. Verifique os seus ficheiros de origem e configurações.")
         return
 
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=150)
-    texts = text_splitter.split_documents(all_docs_with_metadata)
-    print(f"Total de {len(texts)} chunks de texto criados.")
+    print(f"\n--- Processo de Parsing concluído. Total de {len(all_chunks)} chunks lógicos gerados. ---")
 
     embeddings_model = HuggingFaceEmbeddings(
         model_name='thenlper/gte-small',
         model_kwargs={'device': 'cpu'}
     )
 
-    print("Criando o índice FAISS... Isso pode levar alguns minutos.")
-    db = FAISS.from_documents(texts, embeddings_model)
+    print("Criando o índice FAISS... (Isto pode demorar, dependendo do número de chunks)")
+    db = FAISS.from_documents(all_chunks, embeddings_model)
 
     os.makedirs(DB_FAISS_PATH, exist_ok=True)
     db.save_local(str(DB_FAISS_PATH))
-    print(f"Banco de dados de vetores salvo em: {DB_FAISS_PATH}")
+    print(f"\n--- SUCESSO! Banco de dados de vetores salvo em: {DB_FAISS_PATH} ---")
 
 if __name__ == '__main__':
     if not os.path.exists(DB_FAISS_PATH):
         os.makedirs(DB_FAISS_PATH)
-    
-    download_files()
+
     create_vector_db()
