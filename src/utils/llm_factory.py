@@ -22,7 +22,7 @@ def create_llm() -> BaseChatModel:
     provider = os.getenv("LLM_PROVIDER", "ollama").lower()
     model=os.getenv("LLM_MODEL", "llama3.2:1b" ).lower()
     
-    print(f"--- Utilizando o provedor de LLM: {provider} | Modelo: {model} ---")
+    #print(f"--- Utilizando o provedor de LLM: {provider} | Modelo: {model} ---")
     
     if provider == "gemini":
         google_api_key = os.getenv("GOOGLE_API_KEY")
