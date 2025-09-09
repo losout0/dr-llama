@@ -1,38 +1,55 @@
+from pathlib import Path
 from langchain_core.prompts import ChatPromptTemplate
-from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain_core.output_parsers import StrOutputParser
 from typing import List
 from langchain_core.documents import Document
 
 from ..utils import create_llm
 
+def format_docs_for_answerer(docs: List[Document]) -> str:
+    """
+    Helper para formatar documentos, usando o 'pretty_name' dos metadados.
+    """
+    output = []
+    for doc in docs:
+        # Tenta buscar o 'pretty_name'; se falhar, usa o nome do ficheiro 'source'
+        pretty_name = doc.metadata.get('pretty_name', Path(doc.metadata.get('source', 'N/A')).name)
+        output.append(
+            f"--- Documento Fonte: {pretty_name} ---\n{doc.page_content}"
+        )
+    return "\n\n".join(output)
+
+
 def generate_answer(question: str, documents: List[Document]) -> str:
     llm = create_llm()
 
     prompt_template = """
-    Você é um assistente especializado em legislação brasileira. Sua tarefa é responder à pergunta do usuário com base exclusivamente nos trechos de documentos fornecidos no contexto.
+    Você é um assistente especializado em legislação brasileira. Sua tarefa é responder à pergunta do usuário.
 
-    Instruções:
-    1.  Responda de forma clara e objetiva.
-    2.  Ao usar uma informação de um documento, **cite a fonte** (o nome do arquivo) e, se possível, o artigo ou seção relevante.
-    3.  Se a informação não estiver no contexto, responda: "Com base nos documentos fornecidos, não encontrei informações sobre este tópico."
+    REGRAS OBRIGATÓRIAS (VOCÊ DEVE SEGUIR):
+    1.  BASE EXCLUSIVA: Sua resposta deve ser baseada **EXCLUSIVAMENTE** nos trechos de documentos fornecidos no CONTEXTO.
+    2.  NÃO INVENTE: **Não adicione nenhuma informação** que não esteja explicitamente no CONTEXTO.
+    3.  CITAÇÃO OBRIGATÓRIA E DETALHADA: Para CADA informação que você fornecer, você **DEVE** citar a fonte. O LLM deve LER o número do artigo no texto do contexto. O formato deve ser [Fonte: Nome do Documento, Art. XX].
+    4.  RESPOSTA CURTA: Seja direto e responda apenas ao que foi perguntado.
+    5.  SEM CONTEXTO = SEM RESPOSTA: Se a resposta não estiver no CONTEXTO, responda: "Com base nos documentos fornecidos, não encontrei informações sobre este tópico."
 
     CONTEXTO:
     {context}
 
     PERGUNTA:
-    {input}
+    {question}
 
-    RESPOSTA INFORMATIVA E COM CITAÇÕES:
+    RESPOSTA (Precisa, fiel e com citações detalhadas [Fonte: Nome, Art. XX]):
     """
     prompt = ChatPromptTemplate.from_template(prompt_template)
     
-    # Cria a cadeia que sabe como formatar os documentos no prompt
-    question_answer_chain = create_stuff_documents_chain(llm, prompt)
+    context_string = format_docs_for_answerer(documents)
     
-    # Invoca a cadeia passando os documentos e a pergunta
-    response = question_answer_chain.invoke({
-        "input": question,
-        "context": documents
+    chain = prompt | llm | StrOutputParser()
+    
+    response = chain.invoke({
+        "question": question,
+        "context": context_string
     })
     
     return response
