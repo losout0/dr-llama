@@ -17,24 +17,24 @@ def expand_query(question: str) -> List[str]:
     llm = create_llm()
 
     prompt_template = """
-    Você é um assistente especialista em direito brasileiro e um tradutor de "linguagem popular" para "jargão jurídico".
-    A sua tarefa é reescrever a pergunta do utilizador para gerar 3 consultas de busca otimizadas para um motor de busca de vetores.
-    A sua principal função é traduzir termos populares para os seus equivalentes jurídicos formais que aparecem na Lei.
-    Retorne APENAS as 3 consultas, cada uma numa nova linha, sem qualquer outro texto.
+    Você é um assistente especializado em Direito Brasileiro, com domínio da legislação vigente e da terminologia jurídica formal. Sua função é atuar como tradutor de expressões populares para seus correspondentes técnicos e legais, conforme utilizados em normas, códigos e jurisprudência.
+    Sua tarefa consiste em reescrever a pergunta original do usuário — formulada em linguagem informal — para gerar três consultas de busca otimizadas para motores de busca baseados em vetores jurídicos.
+    Cada consulta deve:
+    - Utilizar vocabulário jurídico preciso
+    - Refletir os termos legais presentes na legislação brasileira
+    - Ser redigida de forma clara, objetiva e tecnicamente adequada
+    Retorne apenas as três consultas, cada uma em uma nova linha, sem qualquer texto adicional.
 
-    --- EXEMPLO DE COMPORTAMENTO ESPERADO ---
+    EXEMPLO DE COMPORTAMENTO ESPERADO
     PERGUNTA ORIGINAL:
     Me fale sobre venda casada
-
     CONSULTAS DE BUSCA ALTERNATIVAS:
     o que é venda condicionada no código do consumidor
     Me fale sobre venda condicionada
     proibição de venda condicionada lei
-    -------------------------------------------
 
     PERGUNTA ORIGINAL:
     {question}
-
     CONSULTAS DE BUSCA ALTERNATIVAS:
     """
     
