@@ -1,6 +1,7 @@
 import streamlit as st
 from pathlib import Path
 import sys
+import os
 
 src_path = str(Path(__file__).resolve().parent.parent)
 if src_path not in sys.path:
@@ -12,10 +13,13 @@ except ImportError:
     st.error("Erro ao importar o grafo. Certifique-se que o 'src/graph.py' existe.")
     st.stop()
 
+AVATAR_PATH = "assets/avatar-fav.png"
+ASSISTANT_AVATAR = AVATAR_PATH if os.path.exists(AVATAR_PATH) else "⚖️"
+
 # --- Configuração da Página do Streamlit ---
 st.set_page_config(
     page_title="Dr. Llama - Assistente Jurídico",
-    page_icon="⚖️",
+    page_icon=AVATAR_PATH,
     layout="wide"
 )
 
@@ -41,6 +45,7 @@ if "messages" not in st.session_state:
 
 # Mostra o histórico de mensagens
 for message in st.session_state.messages:
+    avatar_to_use = ASSISTANT_AVATAR if message["role"] == "assistant" else "👤"
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
         if message["role"] == "assistant" and "sources" in message:
@@ -56,7 +61,7 @@ if prompt := st.chat_input("Qual é a sua dúvida?"):
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    with st.chat_message("assistant"):
+    with st.chat_message("assistant", avatar=ASSISTANT_AVATAR):
         with st.spinner("Analisando documentos e gerando resposta..."):
             
             final_state = app.invoke({"question": prompt})
