@@ -4,12 +4,13 @@ from dotenv import load_dotenv
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_ollama.chat_models import ChatOllama
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
 
 def create_llm() -> BaseChatModel:
     """
     Fábrica de LLMs.
     Lê a variável de ambiente LLM_PROVIDER para decidir qual LLM instanciar.
-    Retorna uma instância de um modelo de chat (Ollama ou Gemini).
+    Retorna uma instância de um modelo de chat (Ollama ou Gemini ou Groq).
     """
     project_root = Path(__file__).parent.parent.parent
     dotenv_path = project_root / "config" / ".env"
@@ -32,6 +33,16 @@ def create_llm() -> BaseChatModel:
         return ChatGoogleGenerativeAI(
             model=model,
             google_api_key=google_api_key,
+            temperature=0
+        )
+    elif provider == "groq":
+        groq_api_key = os.getenv("GROQ_API_KEY")
+        if not groq_api_key:
+            raise ValueError("A chave GROQ_API_KEY não foi encontrada no arquivo config/.env")
+            
+        return ChatGroq(
+            model_name=model,
+            groq_api_key=groq_api_key,
             temperature=0
         )
         
