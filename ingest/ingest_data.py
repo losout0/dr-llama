@@ -16,11 +16,13 @@ DB_FAISS_PATH = str(PROJECT_ROOT / "vectorstores" / "db_faiss")
 SOURCES = [
     {
         "name": "constituicao_federal.pdf",
-        "url": "https://www2.senado.leg.br/bdsf/bitstream/handle/id/685819/CF88_EC135_2025_separata.pdf"
+        "url": "https://www2.senado.leg.br/bdsf/bitstream/handle/id/685819/CF88_EC135_2025_separata.pdf",
+        "pretty_name": "Constituição Federal"
     },
     {
         "name": "codigo_defesa_consumidor.pdf",
-        "url": "https://www2.senado.leg.br/bdsf/bitstream/handle/id/533814/cdc_e_normas_correlatas_2ed.pdf"
+        "url": "https://www2.senado.leg.br/bdsf/bitstream/handle/id/533814/cdc_e_normas_correlatas_2ed.pdf",
+        "pretty_name": "Código de defesa do consumidor"
     }
 ]
 
@@ -65,27 +67,43 @@ def download_files():
 
 def create_vector_db():
     """
-    Função para criar o banco de dados de vetores a partir dos PDFs.
+    Cria o banco de dados de vetores a partir dos PDFs na pasta de dados,
+    adicionando metadados personalizados (pretty_name) a cada documento.
     """
-    print("Iniciando a criação do banco de dados de vetores...")
+    print("\nIniciando a criação do banco de dados de vetores com metadados personalizados...")
 
-    loader = DirectoryLoader(DATA_PATH, glob='*.pdf', loader_cls=PyPDFLoader)
-    documents = loader.load()
-    print(f"{len(documents)} documentos carregados.")
+    all_docs_with_metadata = []
+    
+    for source in SOURCES:
+        file_path = os.path.join(DATA_PATH, source["name"])
+        loader = PyPDFLoader(str(file_path))
+        documents = loader.load()
+        
+        for doc in documents:
+            doc.metadata["pretty_name"] = source["pretty_name"]
+            doc.metadata["source"] = source["name"] 
+
+        all_docs_with_metadata.extend(documents)
+        print(f"Carregado e processado: {source['pretty_name']} ({len(documents)} páginas)")
+
+    if not all_docs_with_metadata:
+        print("Nenhum documento foi carregado. Verifique a pasta de dados e os arquivos.")
+        return
 
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=150)
-    texts = text_splitter.split_documents(documents)
-    print(f"{len(texts)} chunks de texto criados.")
+    texts = text_splitter.split_documents(all_docs_with_metadata)
+    print(f"Total de {len(texts)} chunks de texto criados.")
 
     embeddings_model = HuggingFaceEmbeddings(
         model_name='thenlper/gte-small',
         model_kwargs={'device': 'cpu'}
     )
 
-    print("Criando o índice FAISS e indexando os documentos... Isso pode levar alguns minutos.")
+    print("Criando o índice FAISS... Isso pode levar alguns minutos.")
     db = FAISS.from_documents(texts, embeddings_model)
 
-    db.save_local(DB_FAISS_PATH)
+    os.makedirs(DB_FAISS_PATH, exist_ok=True)
+    db.save_local(str(DB_FAISS_PATH))
     print(f"Banco de dados de vetores salvo em: {DB_FAISS_PATH}")
 
 if __name__ == '__main__':
