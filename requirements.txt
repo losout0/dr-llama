@@ -4,6 +4,7 @@ langgraph
 langchain_community
 langchain-google-genai
 langchain-ollama
+langchain-groq
 
 # Embeddings e Modelos
 langchain_huggingface

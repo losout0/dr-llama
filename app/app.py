@@ -4,11 +4,14 @@ import sys
 import os
 
 src_path = str(Path(__file__).resolve().parent.parent)
+src_path_2 = str(Path(__file__).resolve().parent.parent / "src")
 if src_path not in sys.path:
     sys.path.append(src_path)
+if src_path_2 not in sys.path:
+    sys.path.append(src_path_2)
 
 try:
-    from src import build_graph
+    from src.graph import build_graph
 except ImportError:
     st.error("Erro ao importar o grafo. Certifique-se que o 'src/graph.py' existe.")
     st.stop()
