@@ -3,16 +3,10 @@ print("Iniciando: importando as bibliotecas e instanciando os agentes...")
 from typing import List, TypedDict, Literal
 from langchain_core.documents import Document
 from langgraph.graph import StateGraph, END
-import sys
-from pathlib import Path
 
-src_path = str(Path(__file__).resolve().parent)
-if src_path not in sys.path:
-    sys.path.append(src_path)
-
-from agents.retriever import retriever_agent
-from agents.answerer import generate_answer
-from agents.self_checker import check_faithfulness, FaithfulnessCheck
+from agents import retriever_agent
+from agents import generate_answer
+from agents import check_faithfulness, FaithfulnessCheck
 
 # --- Definição do Estado do Grafo ---
 
