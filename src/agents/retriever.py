@@ -26,10 +26,20 @@ class RetrieverAgent:
         
         self.retriever = self.db.as_retriever(search_kwargs={'k': 4})
 
-    def get_relevant_documents(self, question: str) -> List[Document]:
-        # Busca e retorna a lista de objetos Document
-        documents = self.retriever.invoke(question)
-        return documents
+    def get_relevant_documents(self, queries: List[str]) -> List[Document]:
+        """
+        Busca documentos para uma LISTA de consultas, junta os resultados e remove duplicados.
+        Esta operação é rápida, pois os modelos já estão carregados.
+        """
+        all_doc_lists = self.retriever.batch(queries)
+        
+        final_docs_map = {}
+        for doc_list in all_doc_lists:
+            for doc in doc_list:
+                if doc.page_content not in final_docs_map:
+                    final_docs_map[doc.page_content] = doc
+        
+        return list(final_docs_map.values())
 
 # --- Singleton ---    
 retriever_agent = RetrieverAgent()
