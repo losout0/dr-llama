@@ -41,7 +41,7 @@ if os.path.exists(AVATAR_SUCCESS_PATH):
         st.image(AVATAR_SUCCESS_PATH, width=90)
     with col2:
         st.title("Dr. Llama: Seu Assistente Jurídico")
-        st.markdown("Faça uma pergunta sobre a Legislação Brasileira (baseado no Vade Mecum do Senado 2024).")
+        st.markdown("Faça uma pergunta sobre os direitos e deveres do consumidor.")
 else:
     st.title("⚖️ Dr. Llama: Seu Assistente Jurídico")
     st.markdown("Faça uma pergunta sobre a Legislação Brasileira (baseado no Vade Mecum do Senado 2024).")
@@ -85,6 +85,7 @@ if prompt := st.chat_input("Qual é a sua dúvida?"):
 # Lógica para processar a última mensagem do utilizador
 if st.session_state.messages and st.session_state.messages[-1]["role"] == "user":
     user_message = st.session_state.messages[-1]
+    print(user_message)
     
     with st.chat_message("assistant", avatar=AVATAR_SUCCESS): # Avatar temporário
         with st.spinner("Analisando documentos, gerando resposta e fazendo verificação..."):
