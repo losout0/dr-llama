@@ -7,6 +7,7 @@ from langgraph.graph import StateGraph, END
 from agents import retriever_agent
 from agents import generate_answer
 from agents import check_faithfulness, FaithfulnessCheck
+from agents import expand_query
 
 # --- Definição do Estado do Grafo ---
 
@@ -17,6 +18,13 @@ class GraphState(TypedDict):
     verdict: FaithfulnessCheck
 
 # --- NÓS DO GRAFO ---
+
+def query_expander_node(state: GraphState):
+    "Nó que executa o agente Query Expander"
+    print(" --- EXECUTANDO NÓ: QUERY EXPANDER ---")
+    question = state['question']
+    question = expand_query(question)
+    return {"question": question}
 
 def retrieve_node(state: GraphState):
     """Nó que executa o agente Retriever."""
@@ -63,13 +71,16 @@ def route_after_check(state: GraphState) -> Literal["end_safe", "retry_or_fail"]
 def build_graph():
     """Constrói o grafo LangGraph."""
     workflow = StateGraph(GraphState)
-
+    
+    workflow.add_node("query_expander", query_expander_node)
     workflow.add_node("retriever", retrieve_node)
     workflow.add_node("answerer", answer_node)
     workflow.add_node("self_check", self_check_node)
     workflow.add_node("fail_node", fail_node)
     
-    workflow.set_entry_point("retriever")
+    workflow.set_entry_point("query_expander")
+    
+    workflow.add_edge("query_expander", "retriever")
     workflow.add_edge("retriever", "answerer")
     workflow.add_edge("answerer", "self_check")
 

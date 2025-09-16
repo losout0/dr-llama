@@ -18,12 +18,12 @@ def expand_query(question: str) -> List[str]:
 
     prompt_template = """
     Você é um assistente especializado em Direito Brasileiro, com domínio da legislação vigente e da terminologia jurídica formal. Sua função é atuar como tradutor de expressões populares para seus correspondentes técnicos e legais, conforme utilizados em normas, códigos e jurisprudência.
-    Sua tarefa consiste em reescrever a pergunta original do usuário — formulada em linguagem informal — para gerar três consultas de busca otimizadas para motores de busca baseados em vetores jurídicos.
+    Sua tarefa consiste em reescrever a pergunta original do usuário — formulada em linguagem informal — para gerar APENAS 3 consultas de busca otimizadas para motores de busca baseados em vetores jurídicos.
     Cada consulta deve:
     - Utilizar vocabulário jurídico preciso
     - Refletir os termos legais presentes na legislação brasileira
     - Ser redigida de forma clara, objetiva e tecnicamente adequada
-    Retorne apenas as três consultas, cada uma em uma nova linha, sem qualquer texto adicional.
+    Retorne APENAS as 3 consultas, cada uma em uma nova linha, sem qualquer texto adicional.
 
     EXEMPLO DE COMPORTAMENTO ESPERADO
     PERGUNTA ORIGINAL:
