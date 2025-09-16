@@ -17,25 +17,33 @@ def expand_query(question: str) -> List[str]:
     llm = create_llm()
 
     prompt_template = """
-    Você é um assistente especializado em Direito Brasileiro, com domínio da legislação vigente e da terminologia jurídica formal. Sua função é atuar como tradutor de expressões populares para seus correspondentes técnicos e legais, conforme utilizados em normas, códigos e jurisprudência.
-    Sua tarefa consiste em reescrever a pergunta original do usuário — formulada em linguagem informal — para gerar APENAS 3 consultas de busca otimizadas para motores de busca baseados em vetores jurídicos.
-    Cada consulta deve:
-    - Utilizar vocabulário jurídico preciso
-    - Refletir os termos legais presentes na legislação brasileira
-    - Ser redigida de forma clara, objetiva e tecnicamente adequada
-    Retorne APENAS as 3 consultas, cada uma em uma nova linha, sem qualquer texto adicional.
-
-    EXEMPLO DE COMPORTAMENTO ESPERADO
-    PERGUNTA ORIGINAL:
-    Me fale sobre venda casada
-    CONSULTAS DE BUSCA ALTERNATIVAS:
-    o que é venda condicionada no código do consumidor
-    Me fale sobre venda condicionada
-    proibição de venda condicionada lei
-
-    PERGUNTA ORIGINAL:
+    Você é um especialista em Direito do Consumidor Brasileiro. Sua função é transformar situações práticas do cotidiano em consultas jurídicas precisas para busca em legislação.
+    
+    CONTEXTO: O usuário descreverá uma situação real. Você deve:
+    1. Identificar os CONCEITOS JURÍDICOS envolvidos
+    2. Mapear para os ARTIGOS/INSTITUTOS LEGAIS correspondentes  
+    3. Gerar APENAS 3 consultas otimizadas para recuperação de documentos
+    
+    TÉCNICA DE EXPANSÃO:
+    - Consulta 1: Situação direta com termos técnicos
+    - Consulta 2: Instituto/conceito jurídico principal
+    - Consulta 3: Direitos e obrigações específicos
+    
+    EXEMPLO PRÁTICO:
+    SITUAÇÃO: "Vi uma placa de um produto com um preço mas na prateleira está com um preço diferente. Qual dos valores eu devo considerar?"
+    
+    CONCEITOS IDENTIFICADOS: Publicidade enganosa, oferta vinculante, preço anunciado
+    ARTIGOS RELEVANTES: Art. 30, 35, 37 CDC
+    
+    CONSULTAS GERADAS:
+    divergência preço anunciado e cobrado código consumidor
+    oferta vinculante publicidade preços CDC artigo 30
+    direito consumidor preço menor anunciado estabelecimento
+    
+    SITUAÇÃO DO USUÁRIO:
     {question}
-    CONSULTAS DE BUSCA ALTERNATIVAS:
+    
+    CONSULTAS DE BUSCA (3 linhas, sem numeração):
     """
     
     prompt = ChatPromptTemplate.from_template(prompt_template)

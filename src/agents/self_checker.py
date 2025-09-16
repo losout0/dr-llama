@@ -45,30 +45,40 @@ def check_faithfulness(answer: str, documents: List[Document]):
         print("AVISO: O LLM selecionado não suporta 'structured_output' nativamente. A checagem pode falhar.")
 
     prompt_template = """
-    Sua tarefa é atuar como um auditor rigoroso, mas com bom senso. Você deve comparar a RESPOSTA_GERADA com os DOCUMENTOS_DE_EVIDENCIA e determinar se a resposta é 100% fiel às evidências.
+    Você é um revisor jurídico especializado. Sua função é verificar se a orientação jurídica está 100% fundamentada na legislação fornecida.
 
-    Uma resposta é considerada "fiel" SE E SOMENTE SE:
-    1.  Todas as afirmações factuais na resposta estão DIRETAMENTE E SEMANTICAMENTE suportadas por trechos nos documentos de evidência.
-    2.  A resposta NÃO contém nenhuma informação factual que não esteja nos documentos.
-    3.  A resposta CITA a fonte (o nome do arquivo) de onde a informação foi retirada.
-
-    Uma resposta é "nao_fiel" se:
-    1.  Ela inventa qualquer informação factual (alucinação).
-    2.  Ela esquece de citar a fonte.
-    3.  Ela faz afirmações que contradizem as evidências.
-
-    --- REGRAS DE FLEXIBILIDADE (IMPORTANTE) ---
-    -   **PERMITIDO:** É permitido e correto que a resposta corrija erros óbvios de formatação do documento de origem, tais como desifenização.
-    -   **EXEMPLO DE CORREÇÃO PERMITIDA:** Se o documento de evidência mostrar "serviço sem a prévia elabo -", uma resposta que diga "serviço sem a prévia elaboração" é considerada FIEL, pois está a corrigir um artefacto de formatação do PDF.
-    -   A verificação deve ser sobre a **FIDELIDADE SEMÂNTICA (significado)**, não sobre uma correspondência literal de caracteres.
-
-    DOCUMENTOS_DE_EVIDENCIA:
+    CRITÉRIOS DE FIDELIDADE JURÍDICA:
+    
+    ✅ RESPOSTA FIEL quando:
+    1. Cada afirmação jurídica tem base textual nos documentos
+    2. Os artigos citados existem e dizem exatamente o que foi afirmado
+    3. A interpretação jurídica está alinhada com o texto legal
+    4. Não há invenção de direitos ou obrigações não previstos
+    
+    ❌ RESPOSTA NÃO FIEL quando:
+    1. Cita artigos inexistentes ou com conteúdo diferente
+    2. Inventa interpretações não baseadas no texto legal
+    3. Omite exceções importantes presentes na lei
+    4. Faz afirmações jurídicas sem base documental
+    
+    ATENÇÃO ESPECIAL PARA:
+    - Numeração correta de artigos, incisos e parágrafos
+    - Condições e exceções previstas na lei
+    - Prazos e procedimentos específicos
+    - Diferença entre direitos e meras faculdades
+    
+    VERIFICAÇÃO DE QUALIDADE JURÍDICA:
+    - A resposta conecta corretamente fatos → norma → consequência?
+    - Os artigos citados realmente regulam a situação apresentada?
+    - Há contradições entre a resposta e o texto legal?
+    
+    DOCUMENTOS DE REFERÊNCIA:
     {context}
-
-    RESPOSTA_GERADA:
+    
+    RESPOSTA A VERIFICAR:
     {answer}
-
-    Analise a resposta gerada com base em TODAS as regras acima e forneça seu veredito e o motivo.
+    
+    Analise com rigor jurídico e forneça seu veredito:
     """
     
     prompt = ChatPromptTemplate.from_template(prompt_template)
