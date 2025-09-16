@@ -8,6 +8,7 @@ from agents import retriever_agent
 from agents import generate_answer
 from agents import check_faithfulness, FaithfulnessCheck
 from agents import expand_query
+from agents import apply_disclaimer
 
 # --- Definição do Estado do Grafo ---
 
@@ -47,6 +48,13 @@ def self_check_node(state: GraphState):
     verdict_obj = check_faithfulness(answer, documents)
     return {"verdict": verdict_obj}
 
+def safety_node(state: GraphState):
+    """Nó que aplica o disclaimer de segurança a qualquer resposta final."""
+    print(" --- EXECUTANDO NÓ: SAFETY CHECK ---")
+    answer = state["answer"]
+    final_answer_with_disclaimer = apply_disclaimer(answer)
+    return {"answer": final_answer_with_disclaimer}
+
 def fail_node(state: GraphState):
     """Nó de falha. Retorna uma resposta segura."""
     verdict_reason = state["verdict"].reasoning
@@ -77,6 +85,7 @@ def build_graph():
     workflow.add_node("answerer", answer_node)
     workflow.add_node("self_check", self_check_node)
     workflow.add_node("fail_node", fail_node)
+    workflow.add_node("safety_node", safety_node)
     
     workflow.set_entry_point("query_expander")
     
@@ -88,12 +97,12 @@ def build_graph():
         "self_check",                   
         route_after_check,              
         {
-            "end_safe": END,
+            "end_safe": "safety_node",
             "retry_or_fail": "fail_node"
         }
     )
-    
-    workflow.add_edge("fail_node", END)
+    workflow.add_edge("fail_node", "safety_node")
+    workflow.add_edge("safety_node", END)
 
     app = workflow.compile()
     return app
