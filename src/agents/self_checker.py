@@ -45,40 +45,28 @@ def check_faithfulness(answer: str, documents: List[Document]):
         print("AVISO: O LLM selecionado não suporta 'structured_output' nativamente. A checagem pode falhar.")
 
     prompt_template = """
-    Você é um revisor jurídico especializado. Sua função é verificar se a orientação jurídica está 100% fundamentada na legislação fornecida.
+Sua tarefa é verificar se a resposta é fiel aos documentos, com tolerância para variações normais de formatação e sinônimos.
 
-    CRITÉRIOS DE FIDELIDADE JURÍDICA:
-    
-    ✅ RESPOSTA FIEL quando:
-    1. Cada afirmação jurídica tem base textual nos documentos
-    2. Os artigos citados existem e dizem exatamente o que foi afirmado
-    3. A interpretação jurídica está alinhada com o texto legal
-    4. Não há invenção de direitos ou obrigações não previstos
-    
-    ❌ RESPOSTA NÃO FIEL quando:
-    1. Cita artigos inexistentes ou com conteúdo diferente
-    2. Inventa interpretações não baseadas no texto legal
-    3. Omite exceções importantes presentes na lei
-    4. Faz afirmações jurídicas sem base documental
-    
-    ATENÇÃO ESPECIAL PARA:
-    - Numeração correta de artigos, incisos e parágrafos
-    - Condições e exceções previstas na lei
-    - Prazos e procedimentos específicos
-    - Diferença entre direitos e meras faculdades
-    
-    VERIFICAÇÃO DE QUALIDADE JURÍDICA:
-    - A resposta conecta corretamente fatos → norma → consequência?
-    - Os artigos citados realmente regulam a situação apresentada?
-    - Há contradições entre a resposta e o texto legal?
-    
-    DOCUMENTOS DE REFERÊNCIA:
-    {context}
-    
-    RESPOSTA A VERIFICAR:
-    {answer}
-    
-    Analise com rigor jurídico e forneça seu veredito:
+CRITÉRIOS PARA "FIEL":
+1. **FIDELIDADE SEMÂNTICA**: O SIGNIFICADO da informação está nos documentos, mesmo que com redação ligeiramente diferente
+2. **CITAÇÕES VÁLIDAS**: Se menciona "Art. 37" e há "Art. 37º" ou "Artigo 37" no documento = VÁLIDO
+3. **CORREÇÕES PERMITIDAS**: Pode corrigir hifenização, pontuação, formatação do PDF
+4. **SINÔNIMOS ACEITOS**: "publicidade enganosa" = "propaganda enganosa" = VÁLIDO
+
+CRITÉRIOS PARA "NAO_FIEL":
+- Inventa informações factuais que NÃO existem nos documentos
+- Cita artigos que realmente não existem (ex: Art. 999 do CDC)
+- Contradiz explicitamente o texto dos documentos
+
+SEJA FLEXÍVEL com formatação e sinônimos. SEJA RIGOROSO apenas com fatos inventados.
+
+DOCUMENTOS_DE_EVIDENCIA:
+{context}
+
+RESPOSTA_GERADA:
+{answer}
+
+Analise com TOLERÂNCIA SEMÂNTICA e forneça seu veredito:
     """
     
     prompt = ChatPromptTemplate.from_template(prompt_template)
