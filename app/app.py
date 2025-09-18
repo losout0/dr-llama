@@ -44,7 +44,7 @@ if os.path.exists(AVATAR_SUCCESS_PATH):
         st.markdown("Faça uma pergunta sobre os direitos e deveres do consumidor.")
 else:
     st.title("⚖️ Dr. Llama: Seu Assistente Jurídico")
-    st.markdown("Faça uma pergunta sobre a Legislação Brasileira (baseado no Vade Mecum do Senado 2024).")
+    st.markdown("Faça uma pergunta sobre os direitos e deveres do consumidor.")
 st.divider()
 
 # --- Inicialização do Grafo (em cache) ---
