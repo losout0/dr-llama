@@ -10,6 +10,7 @@ from agents import check_faithfulness, FaithfulnessCheck
 from agents import expand_query
 from agents import apply_disclaimer
 from agents import supervisor_agent, supervise_question
+from agents import rephrase_agent
 
 # --- Definição do Estado do Grafo ---
 
@@ -134,17 +135,36 @@ def route_after_check(state: GraphState) -> Literal["end_safe", "retry_or_fail"]
         return "retry_or_fail"
 
 def fail_node(state: GraphState):
-    """
-    Nó de falha. Se a checagem falhar, retornamos uma resposta segura em vez
-    da resposta alucinada/incorreta.
-    """
-    print("--- EXECUTANDO NÓ: FALHA (RESPOSTA NÃO FIEL) ---")
+    print(" --- EXECUTANDO NÓ: FAIL ---")
+
+    question = state["question"]
+    intent = state.get("intent", "consumidor")
     verdict_reason = state["verdict"].reasoning
-    safe_answer = (
-        "Não consegui gerar uma resposta confiável com base nos documentos disponíveis. "
-        f"(Motivo da falha interna: {verdict_reason})"
+    documents = state.get("documents", [])
+    # Gerar sugestões usando o agente inteligente
+    suggestions = rephrase_agent.generate_suggestions(
+        question=question,
+        documents=documents,
+        verdict_reason=verdict_reason,
+        intent=intent
     )
-    return {"answer": safe_answer}
+    # Formatar sugestões para exibição
+    formatted_suggestions = '\n'.join([f'• "{sugg}"' for sugg in suggestions])
+    
+    intelligent_response = f"""
+    🤔 **Não consegui dar uma resposta totalmente precisa, mas tenho sugestões!**
+
+    Você perguntou: "{question}"
+
+    📝 **Tente reformular assim:**
+    {formatted_suggestions}
+
+    💡 **Por que essas sugestões?** Baseei-me nos documentos que encontrei e na terminologia jurídica mais adequada para sua pergunta.
+
+    ❓ **Escolha uma das sugestões acima** ou reformule usando termos similares.
+    """
+
+    return {"answer": intelligent_response}
 
 # --- CONSTRUÇÃO DO GRAFO ---
 
