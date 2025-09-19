@@ -33,7 +33,8 @@ def create_llm() -> BaseChatModel:
         return ChatGoogleGenerativeAI(
             model=model,
             google_api_key=google_api_key,
-            temperature=0
+            temperature=0,
+            n=1
         )
     elif provider == "groq":
         groq_api_key = os.getenv("GROQ_API_KEY")
@@ -43,11 +44,12 @@ def create_llm() -> BaseChatModel:
         return ChatGroq(
             model_name=model,
             groq_api_key=groq_api_key,
-            temperature=0
+            temperature=0,
+            n=1
         )
         
     elif provider == "ollama":
-        return ChatOllama(model=model, temperature=0) 
+        return ChatOllama(model=model, temperature=0, n=1) 
     
     else:
         raise ValueError(
