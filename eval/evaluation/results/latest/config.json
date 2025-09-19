@@ -1,0 +1,6 @@
+{
+  "timestamp": "20250918_221217",
+  "total_questions": 20,
+  "llm_factory_used": true,
+  "evaluation_method": "ragas_with_fallback"
+}

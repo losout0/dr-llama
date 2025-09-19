@@ -1,0 +1,95 @@
+{
+  "ragas": {
+    "faithfulness": 0.5789473684210527,
+    "answer_relevancy": 0.9241228070175439,
+    "context_precision": 0.7,
+    "context_recall": 0.65,
+    "method": "manual_evaluation"
+  },
+  "custom": {
+    "total_questions": 20,
+    "success_count": 19,
+    "error_count": 1,
+    "not_faithful_count": 0,
+    "success_rate": 95.0,
+    "avg_processing_time": 38.801559674739835,
+    "avg_documents_retrieved": 3.1,
+    "category_stats": {
+      "definicao": {
+        "total": 3,
+        "success": 2,
+        "success_rate": 66.66666666666666
+      },
+      "direitos_basicos": {
+        "total": 1,
+        "success": 1,
+        "success_rate": 100.0
+      },
+      "prazos": {
+        "total": 2,
+        "success": 2,
+        "success_rate": 100.0
+      },
+      "direito_arrependimento": {
+        "total": 1,
+        "success": 1,
+        "success_rate": 100.0
+      },
+      "situacao_pratica": {
+        "total": 1,
+        "success": 1,
+        "success_rate": 100.0
+      },
+      "produto_defeituoso": {
+        "total": 1,
+        "success": 1,
+        "success_rate": 100.0
+      },
+      "venda_casada": {
+        "total": 1,
+        "success": 1,
+        "success_rate": 100.0
+      },
+      "troca_produto": {
+        "total": 1,
+        "success": 1,
+        "success_rate": 100.0
+      },
+      "contrato": {
+        "total": 1,
+        "success": 1,
+        "success_rate": 100.0
+      },
+      "garantia": {
+        "total": 3,
+        "success": 3,
+        "success_rate": 100.0
+      },
+      "descumprimento_oferta": {
+        "total": 1,
+        "success": 1,
+        "success_rate": 100.0
+      },
+      "compra_online": {
+        "total": 1,
+        "success": 1,
+        "success_rate": 100.0
+      },
+      "servico_defeituoso": {
+        "total": 1,
+        "success": 1,
+        "success_rate": 100.0
+      },
+      "financiamento": {
+        "total": 1,
+        "success": 1,
+        "success_rate": 100.0
+      },
+      "atendimento": {
+        "total": 1,
+        "success": 1,
+        "success_rate": 100.0
+      }
+    }
+  }
+}
