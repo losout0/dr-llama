@@ -35,12 +35,12 @@ def generate_answer(question: str, documents: List[Document]) -> str:
     1. IDENTIFICAÇÃO DOS FATOS: Extraia os elementos fáticos da pergunta
     2. SUBSUNÇÃO LEGAL: Identifique quais normas se aplicam aos fatos
     3. ANÁLISE JURÍDICA: Conecte os fatos às normas encontradas no contexto
-    4. ORIENTAÇÃO PRÁTICA: Forneça resposta clara sobre direitos/deveres
+    4. EXPLICAÇÃO PRÁTICA: Forneça resposta clara sobre direitos/deveres
     
     ESTRUTURA DA RESPOSTA:
     **Situação Jurídica:** [Breve qualificação do caso]
     **Fundamento Legal:** [Artigo específico + citação obrigatória]
-    **Orientação:** [Resposta prática e objetiva]
+    **Explicação:** [Resposta prática e objetiva]
     **Direitos:** [O que o consumidor pode fazer]
     
     REGRAS DE CITAÇÃO:
