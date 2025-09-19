@@ -82,6 +82,8 @@ def clarification_node(state: GraphState):
     question = state["question"]
     intent = state["intent"]
     
+    new_query = rephrase_agent.rephrase(question)
+
     clarification_response = f"""
 🤔 **Preciso entender melhor sua situação para te ajudar adequadamente.**
 
@@ -95,7 +97,7 @@ Para dar uma resposta jurídica precisa, preciso de mais detalhes:
 - Documentos ou evidências disponíveis
 - Qual resultado você espera alcançar
 
-💡 **Exemplo:** Se é sobre preços diferentes, me diga onde viu cada preço (placa, etiqueta, sistema do caixa) e qual a diferença entre eles.
+💡 **Exemplo:** {new_query}
 
 ❓ **Pode reformular sua pergunta com mais detalhes?**
 """
