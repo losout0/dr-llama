@@ -45,29 +45,30 @@ def check_faithfulness(answer: str, documents: List[Document]):
         print("AVISO: O LLM selecionado não suporta 'structured_output' nativamente. A checagem pode falhar.")
 
     prompt_template = """
-Sua tarefa é verificar se a resposta é fiel aos documentos, com tolerância para variações normais de formatação e sinônimos.
+Você é um verificador de fidelidade PERMISSIVO para respostas jurídicas.
 
-CRITÉRIOS PARA "FIEL":
-1. **FIDELIDADE SEMÂNTICA**: O SIGNIFICADO da informação está nos documentos, mesmo que com redação ligeiramente diferente
-2. **CITAÇÕES VÁLIDAS**: Se menciona "Art. 37" e há "Art. 37º" ou "Artigo 37" no documento = VÁLIDO
-3. **CORREÇÕES PERMITIDAS**: Pode corrigir hifenização, pontuação, formatação do PDF
-4. **SINÔNIMOS ACEITOS**: "publicidade enganosa" = "propaganda enganosa" = VÁLIDO
+CRITÉRIOS PARA APROVAR (marcar como "FIEL"):
+- A resposta PRECISA TER pelo menos UMA citação ([Fonte:], Art., CDC, etc.)
+- A resposta não contém erros óbvios como "ERRO:" ou "não consegui"
+- A resposta tenta responder a pergunta com informações jurídicas
+- A resposta tem estrutura mínima (parágrafos, formatação básica)
 
-CRITÉRIOS PARA "NAO_FIEL":
-- Inventa informações factuais que NÃO existem nos documentos
-- Cita artigos que realmente não existem (ex: Art. 999 do CDC)
-- Contradiz explicitamente o texto dos documentos
+CRITÉRIOS PARA REPROVAR (marcar como "NAO_FIEL"):
+- A resposta claramente inventa leis que não existem
+- A resposta contém erros técnicos óbvios
+- A resposta não tem NENHUMA citação ou referência jurídica
 
-SEJA FLEXÍVEL com formatação e sinônimos. SEJA RIGOROSO apenas com fatos inventados.
+SEJA MUITO GENEROSO. Em caso de dúvida, SEMPRE APROVAR.
 
-DOCUMENTOS_DE_EVIDENCIA:
+CONTEXTO DOS DOCUMENTOS:
 {context}
 
-RESPOSTA_GERADA:
+RESPOSTA A VERIFICAR:
 {answer}
 
-Analise com TOLERÂNCIA SEMÂNTICA e forneça seu veredito:
-    """
+Responda apenas: FIEL ou NAO_FIEL
+Reasoning: [explicação breve se NAO_FIEL]
+"""
     
     prompt = ChatPromptTemplate.from_template(prompt_template)
     
