@@ -17,34 +17,19 @@ def expand_query(question: str) -> List[str]:
     llm = create_llm()
 
     prompt_template = """
-    Você é um especialista em Direito do Consumidor Brasileiro. Sua função é transformar situações práticas do cotidiano em consultas jurídicas precisas para busca em legislação.
-    
-    CONTEXTO: O usuário descreverá uma situação real. Você deve:
-    1. Identificar os CONCEITOS JURÍDICOS envolvidos
-    2. Mapear para os ARTIGOS/INSTITUTOS LEGAIS correspondentes  
-    3. Gerar APENAS 3 consultas otimizadas para recuperação de documentos
-    
-    TÉCNICA DE EXPANSÃO:
-    - Consulta 1: Situação direta com termos técnicos
-    - Consulta 2: Instituto/conceito jurídico principal
-    - Consulta 3: Direitos e obrigações específicos
-    
-    EXEMPLO PRÁTICO:
-    SITUAÇÃO: "Vi uma placa de um produto com um preço mas na prateleira está com um preço diferente. Qual dos valores eu devo considerar?"
-    
-    CONCEITOS IDENTIFICADOS: Publicidade enganosa, oferta vinculante, preço anunciado
-    ARTIGOS RELEVANTES: Art. 30, 35, 37 CDC
-    
-    CONSULTAS GERADAS:
-    divergência preço anunciado e cobrado código consumidor
-    oferta vinculante publicidade preços CDC artigo 30
-    direito consumidor preço menor anunciado estabelecimento
-    
-    SITUAÇÃO DO USUÁRIO:
-    {question}
-    
-    CONSULTAS DE BUSCA (3 linhas, sem numeração):
-    """
+Você é um gerador de consultas para busca densa em legislação brasileira (CDC).
+Regras obrigatórias:
+- Retorne exatamente 3 consultas curtas (3–6 palavras), uma por linha.
+- Sem numeração, sem aspas, sem asteriscos, sem cabeçalhos, sem explicações.
+- Use minúsculas e termos jurídicos precisos (ex.: prática abusiva, oferta vinculante, art. 39 cdc).
+- Não repita consultas nem varie apenas por plurais/sinais.
+- Saída deve conter apenas as 3 linhas de consultas.
+
+Pergunta:
+{question}
+
+Saída:
+"""
     
     prompt = ChatPromptTemplate.from_template(prompt_template)
     
