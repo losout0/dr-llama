@@ -10,7 +10,7 @@ Seu assistente de IA para informações sobre a legislação brasileira.
 
 - [🎯Problema e Objetivo](#-problema-e-objetivo)
 - [✨Funcionalidades](#-funcionalidades)
-- [🏗️Arquitetura](#-arquitetura)
+- [🏗️Arquitetura](#️-arquitetura)
 - [🚀Como Executar Localmente](#-como-executar-localmente)
   - [Pré-requisitos](#-pré-requisitos)
   - [Instalação](#-instalação)
@@ -168,8 +168,8 @@ docker run -p 8501:8501 dr-llama
 ├── .gitignore              
 ├── Dockerfile              # Containerização do ambiente
 ├── LICENSE                 # Licença aberta (MIT)
-└── README.md               # Este arquivo
-├── requirements.txt        # Dependências do projeto
+├── README.md               # Este arquivo
+└── requirements.txt        # Dependências do projeto
 ```
 
 ### 📊 Avaliação
