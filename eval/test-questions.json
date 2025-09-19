@@ -1,0 +1,182 @@
+{
+  "metadata": {
+    "dataset_name": "Dr. Llama - Direito do Consumidor Test Dataset",
+    "created_date": "2025-09-18",
+    "version": "1.0",
+    "description": "Dataset para avaliação RAGAS do sistema RAG sobre Código de Defesa do Consumidor brasileiro",
+    "_comment": {
+      "*": "As perguntas foram inspiradas em documentos sobre o código de defesa do consumidor",
+      "1": "https://vlex.com.br/vid/perguntas-mais-frequentes-acerca-595995502",
+      "2": "https://www.spcbrasil.com.br/blog/direitos-do-consumidor",
+      "3": "https://idec.org.br/dicas-e-direitos/32-direitos-do-consumidor-que-voce-precisa-conhecer",
+      "4": "https://procon.campinas.sp.gov.br/sites/procon.campinas.sp.gov.br/files/arquivos-pesquisa/CARTILHA_POL%C3%8DTICA-DE-TROCAS-PROCON%207.pdf"
+    }
+  },
+  "questions": [
+    {
+      "id": 1,
+      "question": "O que é venda casada?",
+      "ground_truth": "**Situação Jurídica:** Identificação de prática abusiva nas relações de consumo\n\n**Fundamento Legal:** Venda casada é prática abusiva definida no Art. 39, inciso I do Código de Defesa do Consumidor, que consiste em condicionar o fornecimento de produto ou serviço ao fornecimento de outro produto ou serviço [Fonte: Código de Defesa do Consumidor, Art. 39]\n\n**Orientação:** Esta prática viola o direito de escolha do consumidor ao forçá-lo a adquirir produtos ou serviços que não deseja.\n\n**Direitos:** O consumidor pode recusar produtos adicionais, denunciar ao Procon e exigir rescisão do contrato sem penalidades.\n\n---\n**Aviso Legal:** Este conteúdo tem caráter puramente informativo e não substitui assessoria jurídica formal.",
+      "category": "definicao",
+      "difficulty": "facil"
+    },
+    {
+      "id": 2,
+      "question": "O que é publicidade enganosa?",
+      "ground_truth": "**Situação Jurídica:** Identificação de prática publicitária irregular\n\n**Fundamento Legal:** Publicidade enganosa é definida no Art. 37, §1º do CDC como qualquer modalidade de informação ou comunicação de caráter publicitário, inteira ou parcialmente falsa, capaz de induzir em erro o consumidor [Fonte: Código de Defesa do Consumidor, Art. 37]\n\n**Orientação:** Abrange informações falsas sobre natureza, características, qualidade, quantidade, propriedades, origem e preço de produtos e serviços.\n\n**Direitos:** O consumidor pode exigir cumprimento da oferta, rescisão contratual, indenização por danos e denunciar aos órgãos competentes.\n\n---\n**Aviso Legal:** Este conteúdo tem caráter puramente informativo e não substitui assessoria jurídica formal.",
+      "category": "definicao",
+      "difficulty": "medio"
+    },
+    {
+      "id": 3,
+      "question": "Quais são os direitos básicos do consumidor?",
+      "ground_truth": "**Situação Jurídica:** Identificação dos direitos fundamentais do consumidor\n\n**Fundamento Legal:** Os direitos básicos do consumidor estão previstos no Art. 6º do CDC [Fonte: Código de Defesa do Consumidor, Art. 6º]\n\n**Orientação:** O CDC estabelece direitos fundamentais para proteção integral do consumidor nas relações de mercado.\n\n**Direitos:** Proteção à vida, saúde e segurança; educação sobre consumo adequado; informação adequada e clara; proteção contra publicidade enganosa; modificação de cláusulas abusivas; prevenção e reparação de danos; acesso aos órgãos judiciários; facilitação da defesa de direitos; qualidade dos serviços públicos.\n\n---\n**Aviso Legal:** Este conteúdo tem caráter puramente informativo e não substitui assessoria jurídica formal.",
+      "category": "direitos_basicos",
+      "difficulty": "medio"
+    },
+    {
+      "id": 4,
+      "question": "Qual o prazo da garantia legal para produtos duráveis?",
+      "ground_truth": "**Situação Jurídica:** Determinação de prazo decadencial para vícios\n\n**Fundamento Legal:** Conforme o Art. 26 do CDC, o direito de reclamar pelos vícios aparentes caduca em 90 dias para produtos duráveis [Fonte: Código de Defesa do Consumidor, Art. 26]\n\n**Orientação:** Este prazo é decadencial e conta-se da entrega efetiva do produto ao consumidor.\n\n**Direitos:** O consumidor pode exigir reparação do vício, substituição do produto, restituição do valor pago ou abatimento proporcional do preço.\n\n---\n**Aviso Legal:** Este conteúdo tem caráter puramente informativo e não substitui assessoria jurídica formal.",
+      "category": "prazos",
+      "difficulty": "facil"
+    },
+    {
+      "id": 5,
+      "question": "Posso me arrepender de uma compra feita pela internet?",
+      "ground_truth": "**Situação Jurídica:** Exercício do direito de arrependimento\n\n**Fundamento Legal:** O Art. 49 do CDC garante ao consumidor o direito de desistir do contrato no prazo de 7 dias quando a contratação ocorrer fora do estabelecimento comercial [Fonte: Código de Defesa do Consumidor, Art. 49]\n\n**Orientação:** Este direito aplica-se a compras por telefone, internet, domicílio e outras formas de venda à distância.\n\n**Direitos:** Desistência imotivada em 7 dias, devolução integral dos valores pagos, cancelamento sem custos adicionais.\n\n---\n**Aviso Legal:** Este conteúdo tem caráter puramente informativo e não substitui assessoria jurídica formal.",
+      "category": "direito_arrependimento",
+      "difficulty": "facil"
+    },
+    {
+      "id": 6,
+      "question": "Se há dois preços diferentes para o mesmo produto, qual prevalece?",
+      "ground_truth": "**Situação Jurídica:** Resolução de divergência de preços\n\n**Fundamento Legal:** Quando há divergência de preços, prevalece o menor preço, conforme Lei 10.962/2004 e princípio da boa-fé do CDC [Fonte: Lei 10.962/2004; Código de Defesa do Consumidor]\n\n**Orientação:** A legislação protege o consumidor contra práticas que possam induzi-lo em erro sobre o preço real.\n\n**Direitos:** Exigir o menor preço anunciado, recusar cobrança adicional, denunciar práticas abusivas ao Procon.\n\n---\n**Aviso Legal:** Este conteúdo tem caráter puramente informativo e não substitui assessoria jurídica formal.",
+      "category": "situacao_pratica",
+      "difficulty": "facil"
+    },
+    {
+      "id": 7,
+      "question": "O que devo fazer se o produto apresentar defeito após a compra?",
+      "ground_truth": "**Situação Jurídica:** Tratamento de vícios do produto\n\n**Fundamento Legal:** O Art. 18 do CDC estabelece as alternativas do consumidor em caso de vícios de qualidade ou quantidade [Fonte: Código de Defesa do Consumidor, Art. 18]\n\n**Orientação:** O fornecedor tem 30 dias para sanar o vício, após este prazo o consumidor pode escolher uma das alternativas legais.\n\n**Direitos:** Substituição das partes viciadas; substituição do produto por outro em perfeitas condições; restituição imediata da quantia paga; abatimento proporcional do preço.\n\n---\n**Aviso Legal:** Este conteúdo tem caráter puramente informativo e não substitui assessoria jurídica formal.",
+      "category": "produto_defeituoso",
+      "difficulty": "medio"
+    },
+    {
+      "id": 8,
+      "question": "É obrigatório contratar seguro para fazer um empréstimo?",
+      "ground_truth": "**Situação Jurídica:** Identificação de venda casada em operações financeiras\n\n**Fundamento Legal:** Exigir contratação de seguro como condição para empréstimo configura venda casada, prática proibida pelo Art. 39, inciso I do CDC [Fonte: Código de Defesa do Consumidor, Art. 39]\n\n**Orientação:** Instituições financeiras não podem condicionar serviços essenciais à contratação de produtos adicionais.\n\n**Direitos:** Recusar produtos adicionais, contratar empréstimo sem seguros vinculados, denunciar práticas abusivas ao Banco Central e Procon.\n\n---\n**Aviso Legal:** Este conteúdo tem caráter puramente informativo e não substitui assessoria jurídica formal.",
+      "category": "venda_casada",
+      "difficulty": "medio"
+    },
+    {
+      "id": 9,
+      "question": "Qual o prazo para o fornecedor consertar um produto com defeito?",
+      "ground_truth": "**Situação Jurídica:** Prazo para saneamento de vícios\n\n**Fundamento Legal:** Segundo o Art. 18, §1º do CDC, o fornecedor tem prazo máximo de 30 dias para sanar o vício [Fonte: Código de Defesa do Consumidor, Art. 18]\n\n**Orientação:** Transcorrido este prazo sem solução, o consumidor pode exigir as alternativas previstas em lei.\n\n**Direitos:** Após 30 dias: substituição do produto, restituição da quantia paga ou abatimento proporcional do preço.\n\n---\n**Aviso Legal:** Este conteúdo tem caráter puramente informativo e não substitui assessoria jurídica formal.",
+      "category": "prazos",
+      "difficulty": "facil"
+    },
+    {
+      "id": 10,
+      "question": "A loja é obrigada a trocar produto sem defeito?",
+      "ground_truth": "**Situação Jurídica:** Limites da obrigação de troca\n\n**Fundamento Legal:** O CDC não obriga troca de produtos sem defeito por mera liberalidade do consumidor [Fonte: Código de Defesa do Consumidor]\n\n**Orientação:** A troca só é obrigatória quando há vício, descumprimento de oferta ou compras fora do estabelecimento (direito de arrependimento).\n\n**Direitos:** Troca obrigatória apenas em caso de vícios, ofertas descumpridas ou exercício do direito de arrependimento em compras à distância.\n\n---\n**Aviso Legal:** Este conteúdo tem caráter puramente informativo e não substitui assessoria jurídica formal.",
+      "category": "troca_produto",
+      "difficulty": "medio"
+    },
+    {
+      "id": 11,
+      "question": "O que caracteriza propaganda abusiva?",
+      "ground_truth": "**Situação Jurídica:** Identificação de propaganda abusiva\n\n**Fundamento Legal:** O Art. 37, §2º do CDC define propaganda abusiva como discriminatória, que incite violência, explore medo ou superstição, ou se aproveite da deficiência de julgamento infantil [Fonte: Código de Defesa do Consumidor, Art. 37]\n\n**Orientação:** Diferencia-se da propaganda enganosa por focar no caráter discriminatório, perigoso ou exploratório da mensagem.\n\n**Direitos:** Denunciar aos órgãos competentes, exigir retirada da propaganda, pleitear indenização por danos morais coletivos.\n\n---\n**Aviso Legal:** Este conteúdo tem caráter puramente informativo e não substitui assessoria jurídica formal.",
+      "category": "definicao",
+      "difficulty": "dificil"
+    },
+    {
+      "id": 12,
+      "question": "Quando posso cancelar um contrato de serviço contínuo?",
+      "ground_truth": "**Situação Jurídica:** Rescisão de contratos de prestação continuada\n\n**Fundamento Legal:** Para contratos de serviços contínuos, o consumidor pode rescindir a qualquer tempo, conforme Art. 54, §2º do CDC e jurisprudência consolidada [Fonte: Código de Defesa do Consumidor, Art. 54]\n\n**Orientação:** São vedadas cláusulas que impeçam ou dificultem excessivamente a rescisão pelo consumidor.\n\n**Direitos:** Cancelamento a qualquer tempo, pagamento proporcional dos serviços utilizados, restituição de valores pagos antecipadamente.\n\n---\n**Aviso Legal:** Este conteúdo tem caráter puramente informativo e não substitui assessoria jurídica formal.",
+      "category": "contrato",
+      "difficulty": "dificil"
+    },
+    {
+      "id": 13,
+      "question": "Preciso guardar a nota fiscal para ter garantia?",
+      "ground_truth": "**Situação Jurídica:** Comprovação para exercício da garantia legal\n\n**Fundamento Legal:** A garantia legal do CDC independe da apresentação da nota fiscal, embora ela facilite a comprovação [Fonte: Código de Defesa do Consumidor]\n\n**Orientação:** Outros meios de prova podem ser utilizados para comprovar a relação de consumo.\n\n**Direitos:** Usar comprovantes alternativos como cartão de crédito, testemunhas, embalagens, manuais com data de fabricação.\n\n---\n**Aviso Legal:** Este conteúdo tem caráter puramente informativo e não substitui assessoria jurídica formal.",
+      "category": "garantia",
+      "difficulty": "medio"
+    },
+    {
+      "id": 14,
+      "question": "O que fazer se a empresa descumprir o prazo de entrega?",
+      "ground_truth": "**Situação Jurídica:** Descumprimento de oferta contratual\n\n**Fundamento Legal:** O Art. 35 do CDC estabelece alternativas quando o fornecedor não cumpre a oferta [Fonte: Código de Defesa do Consumidor, Art. 35]\n\n**Orientação:** O prazo de entrega integra a oferta e seu descumprimento gera direito às alternativas legais.\n\n**Direitos:** Exigir cumprimento forçado da obrigação; aceitar outro produto equivalente; rescindir o contrato com restituição atualizada e eventuais perdas e danos.\n\n---\n**Aviso Legal:** Este conteúdo tem caráter puramente informativo e não substitui assessoria jurídica formal.",
+      "category": "descumprimento_oferta",
+      "difficulty": "medio"
+    },
+    {
+      "id": 15,
+      "question": "Produtos em promoção têm a mesma garantia?",
+      "ground_truth": "**Situação Jurídica:** Garantia legal em produtos promocionais\n\n**Fundamento Legal:** O Art. 24 do CDC estabelece que a garantia legal independe de termo expresso e vale para todos os produtos [Fonte: Código de Defesa do Consumidor, Art. 24]\n\n**Orientação:** A garantia legal é direito irrenunciável e não pode ser afetada por condições comerciais como promoções.\n\n**Direitos:** Mesma garantia legal (30 ou 90 dias), direitos de troca e reparação idênticos aos produtos em preço normal.\n\n---\n**Aviso Legal:** Este conteúdo tem caráter puramente informativo e não substitui assessoria jurídica formal.",
+      "category": "garantia",
+      "difficulty": "facil"
+    },
+    {
+      "id": 16,
+      "question": "Posso ser cobrado por taxa de conveniência em compras online?",
+      "ground_truth": "**Situação Jurídica:** Cobrança de taxas adicionais em e-commerce\n\n**Fundamento Legal:** A cobrança pode ser abusiva se não informada claramente, conforme Art. 6º, III do CDC sobre direito à informação adequada [Fonte: Código de Defesa do Consumidor, Art. 6º]\n\n**Orientação:** O consumidor deve ser informado de todos os custos antes da finalização da compra.\n\n**Direitos:** Informação prévia e clara sobre todas as taxas, recusa de cobranças não informadas, cancelamento da compra sem custos.\n\n---\n**Aviso Legal:** Este conteúdo tem caráter puramente informativo e não substitui assessoria jurídica formal.",
+      "category": "compra_online",
+      "difficulty": "dificil"
+    },
+    {
+      "id": 17,
+      "question": "O que é considerado serviço defeituoso?",
+      "ground_truth": "**Situação Jurídica:** Identificação de vícios em serviços\n\n**Fundamento Legal:** O Art. 20 do CDC define que fornecedores respondem por vícios que tornem serviços impróprios ao consumo ou diminuam seu valor [Fonte: Código de Defesa do Consumidor, Art. 20]\n\n**Orientação:** Inclui vícios decorrentes de disparidade com ofertas ou mensagens publicitárias.\n\n**Direitos:** Reexecução do serviço sem custo, restituição da quantia paga, abatimento proporcional do preço.\n\n---\n**Aviso Legal:** Este conteúdo tem caráter puramente informativo e não substitui assessoria jurídica formal.",
+      "category": "servico_defeituoso",
+      "difficulty": "medio"
+    },
+    {
+      "id": 18,
+      "question": "Posso desistir de um financiamento já assinado?",
+      "ground_truth": "**Situação Jurídica:** Direito de arrependimento em contratos financeiros\n\n**Fundamento Legal:** Se assinado fora do estabelecimento, aplica-se o Art. 49 do CDC (7 dias de arrependimento) [Fonte: Código de Defesa do Consumidor, Art. 49]\n\n**Orientação:** Para contratos presenciais na agência, não há direito de arrependimento, salvo vícios ou cláusulas abusivas.\n\n**Direitos:** Arrependimento em 7 dias para contratos à distância; rescisão por vícios ou abusividade em contratos presenciais.\n\n---\n**Aviso Legal:** Este conteúdo tem caráter puramente informativo e não substitui assessoria jurídica formal.",
+      "category": "financiamento",
+      "difficulty": "dificil"
+    },
+    {
+      "id": 19,
+      "question": "Qual a diferença entre garantia legal e contratual?",
+      "ground_truth": "**Situação Jurídica:** Distinção entre tipos de garantia\n\n**Fundamento Legal:** A garantia legal é estabelecida pelo CDC (30/90 dias) e a contratual é voluntária, devendo ser complementar conforme Art. 50 [Fonte: Código de Defesa do Consumidor, Art. 50]\n\n**Orientação:** A garantia contratual não pode substituir a legal, apenas complementá-la.\n\n**Direitos:** Garantia legal automática e irrenunciável; garantia contratual adicional e complementar quando oferecida.\n\n---\n**Aviso Legal:** Este conteúdo tem caráter puramente informativo e não substitui assessoria jurídica formal.",
+      "category": "garantia",
+      "difficulty": "medio"
+    },
+    {
+      "id": 20,
+      "question": "Empresa pode se recusar a atender reclamação por WhatsApp?",
+      "ground_truth": "**Situação Jurídica:** Obrigação de atendimento adequado ao consumidor\n\n**Fundamento Legal:** Embora não haja obrigação específica, o Art. 4º do CDC estabelece direito ao atendimento adequado às necessidades dos consumidores [Fonte: Código de Defesa do Consumidor, Art. 4º]\n\n**Orientação:** Se a empresa disponibiliza o canal, deve prestar atendimento adequado, respeitando a dignidade do consumidor.\n\n**Direitos:** Atendimento respeitoso e eficaz nos canais disponibilizados, acesso a outros meios de atendimento, registro formal de reclamações.\n\n---\n**Aviso Legal:** Este conteúdo tem caráter puramente informativo e não substitui assessoria jurídica formal.",
+      "category": "atendimento",
+      "difficulty": "dificil"
+    }
+  ],
+  "statistics": {
+    "total_questions": 20,
+    "categories": {
+      "definicao": 3,
+      "direitos_basicos": 1,
+      "prazos": 2,
+      "direito_arrependimento": 1,
+      "situacao_pratica": 1,
+      "produto_defeituoso": 1,
+      "venda_casada": 1,
+      "troca_produto": 1,
+      "garantia": 3,
+      "descumprimento_oferta": 1,
+      "compra_online": 1,
+      "servico_defeituoso": 1,
+      "financiamento": 1,
+      "atendimento": 1,
+      "contrato": 1
+    },
+    "difficulty_levels": {
+      "facil": 5,
+      "medio": 9,
+      "dificil": 6
+    }
+  }
+}

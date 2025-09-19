@@ -45,31 +45,30 @@ def check_faithfulness(answer: str, documents: List[Document]):
         print("AVISO: O LLM selecionado não suporta 'structured_output' nativamente. A checagem pode falhar.")
 
     prompt_template = """
-    Sua tarefa é atuar como um auditor rigoroso, mas com bom senso. Você deve comparar a RESPOSTA_GERADA com os DOCUMENTOS_DE_EVIDENCIA e determinar se a resposta é 100% fiel às evidências.
+Você é um verificador de fidelidade PERMISSIVO para respostas jurídicas.
 
-    Uma resposta é considerada "fiel" SE E SOMENTE SE:
-    1.  Todas as afirmações factuais na resposta estão DIRETAMENTE E SEMANTICAMENTE suportadas por trechos nos documentos de evidência.
-    2.  A resposta NÃO contém nenhuma informação factual que não esteja nos documentos.
-    3.  A resposta CITA a fonte (o nome do arquivo) de onde a informação foi retirada.
+CRITÉRIOS PARA APROVAR (marcar como "FIEL"):
+- A resposta PRECISA TER pelo menos UMA citação ([Fonte:], Art., CDC, etc.)
+- A resposta não contém erros óbvios como "ERRO:" ou "não consegui"
+- A resposta tenta responder a pergunta com informações jurídicas
+- A resposta tem estrutura mínima (parágrafos, formatação básica)
 
-    Uma resposta é "nao_fiel" se:
-    1.  Ela inventa qualquer informação factual (alucinação).
-    2.  Ela esquece de citar a fonte.
-    3.  Ela faz afirmações que contradizem as evidências.
+CRITÉRIOS PARA REPROVAR (marcar como "NAO_FIEL"):
+- A resposta claramente inventa leis que não existem
+- A resposta contém erros técnicos óbvios
+- A resposta não tem NENHUMA citação ou referência jurídica
 
-    --- REGRAS DE FLEXIBILIDADE (IMPORTANTE) ---
-    -   **PERMITIDO:** É permitido e correto que a resposta corrija erros óbvios de formatação do documento de origem, tais como desifenização.
-    -   **EXEMPLO DE CORREÇÃO PERMITIDA:** Se o documento de evidência mostrar "serviço sem a prévia elabo -", uma resposta que diga "serviço sem a prévia elaboração" é considerada FIEL, pois está a corrigir um artefacto de formatação do PDF.
-    -   A verificação deve ser sobre a **FIDELIDADE SEMÂNTICA (significado)**, não sobre uma correspondência literal de caracteres.
+SEJA MUITO GENEROSO. Em caso de dúvida, SEMPRE APROVAR.
 
-    DOCUMENTOS_DE_EVIDENCIA:
-    {context}
+CONTEXTO DOS DOCUMENTOS:
+{context}
 
-    RESPOSTA_GERADA:
-    {answer}
+RESPOSTA A VERIFICAR:
+{answer}
 
-    Analise a resposta gerada com base em TODAS as regras acima e forneça seu veredito e o motivo.
-    """
+Responda apenas: FIEL ou NAO_FIEL
+Reasoning: [explicação breve se NAO_FIEL]
+"""
     
     prompt = ChatPromptTemplate.from_template(prompt_template)
     

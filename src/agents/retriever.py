@@ -24,7 +24,7 @@ class RetrieverAgent:
             allow_dangerous_deserialization=True
         )
         
-        self.retriever = self.db.as_retriever(search_kwargs={'k': 4})
+        self.retriever = self.db.as_retriever(search_kwargs={'k': 2})
 
     def get_relevant_documents(self, queries: List[str]) -> List[Document]:
         """

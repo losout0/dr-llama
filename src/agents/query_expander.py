@@ -17,26 +17,19 @@ def expand_query(question: str) -> List[str]:
     llm = create_llm()
 
     prompt_template = """
-    Você é um assistente especializado em Direito Brasileiro, com domínio da legislação vigente e da terminologia jurídica formal. Sua função é atuar como tradutor de expressões populares para seus correspondentes técnicos e legais, conforme utilizados em normas, códigos e jurisprudência.
-    Sua tarefa consiste em reescrever a pergunta original do usuário — formulada em linguagem informal — para gerar três consultas de busca otimizadas para motores de busca baseados em vetores jurídicos.
-    Cada consulta deve:
-    - Utilizar vocabulário jurídico preciso
-    - Refletir os termos legais presentes na legislação brasileira
-    - Ser redigida de forma clara, objetiva e tecnicamente adequada
-    Retorne apenas as três consultas, cada uma em uma nova linha, sem qualquer texto adicional.
+Você é um gerador de consultas para busca densa em legislação brasileira (CDC).
+Regras obrigatórias:
+- Retorne exatamente 3 consultas curtas (3–6 palavras), uma por linha.
+- Sem numeração, sem aspas, sem asteriscos, sem cabeçalhos, sem explicações.
+- Use minúsculas e termos jurídicos precisos (ex.: prática abusiva, oferta vinculante, art. 39 cdc).
+- Não repita consultas nem varie apenas por plurais/sinais.
+- Saída deve conter apenas as 3 linhas de consultas.
 
-    EXEMPLO DE COMPORTAMENTO ESPERADO
-    PERGUNTA ORIGINAL:
-    Me fale sobre venda casada
-    CONSULTAS DE BUSCA ALTERNATIVAS:
-    o que é venda condicionada no código do consumidor
-    Me fale sobre venda condicionada
-    proibição de venda condicionada lei
+Pergunta:
+{question}
 
-    PERGUNTA ORIGINAL:
-    {question}
-    CONSULTAS DE BUSCA ALTERNATIVAS:
-    """
+Saída:
+"""
     
     prompt = ChatPromptTemplate.from_template(prompt_template)
     
