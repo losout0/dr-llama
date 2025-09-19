@@ -29,3 +29,5 @@ ollama
 
 # Avaliação
 ragas
+datasets
+pandas
