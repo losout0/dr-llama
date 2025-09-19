@@ -35,7 +35,6 @@ def supervisor_node(state: GraphState):
     return {
         "intent": supervision_result["intent"],
         "needs_clarification": supervision_result["needs_clarification"],
-        "expanded_queries": supervision_result["expanded_queries"],
         "confidence": supervision_result["confidence"]
     }
 
@@ -43,13 +42,13 @@ def query_expander_node(state: GraphState):
     "Nó que executa o agente Query Expander"
     print(" --- EXECUTANDO NÓ: QUERY EXPANDER ---")
     question = state['question']
-    question = expand_query(question)
-    return {"question": question}
+    queries = expand_query(question)
+    return {"expanded_queries": queries}
 
 def retrieve_node(state: GraphState):
     """Nó que executa o agente Retriever."""
     print("--- EXECUTANDO NÓ: RETRIEVER ---")
-    question = state["question"]
+    question = state.get("expanded_queries") or [state["question"]]
     documents = retriever_agent.get_relevant_documents(question)
     return {"documents": documents}
 
@@ -59,6 +58,9 @@ def answer_node(state: GraphState):
     question = state["question"]
     documents = state["documents"]
     answer = generate_answer(question, documents)
+    
+    print(f"\n{answer}\n")
+    
     return {"answer": answer}
 
 def self_check_node(state: GraphState):
@@ -121,8 +123,8 @@ def route_after_supervisor(state: GraphState) -> Literal["clarification", "retri
         print("Roteando para: clarification")
         return "clarification"
     else:
-        print("Roteando para: retrieve")
-        return "retrieve"
+        print("Roteando para: query_expander")
+        return "query_expander"
 
 def route_after_check(state: GraphState) -> Literal["end_safe", "retry_or_fail"]:
     """
@@ -135,34 +137,21 @@ def route_after_check(state: GraphState) -> Literal["end_safe", "retry_or_fail"]
         return "retry_or_fail"
 
 def fail_node(state: GraphState):
-    print(" --- EXECUTANDO NÓ: FAIL ---")
-
+    print(" --- EXECUTANDO NÓ: FAIL --- ")
     question = state["question"]
-    intent = state.get("intent", "consumidor")
-    verdict_reason = state["verdict"].reasoning
-    documents = state.get("documents", [])
-    # Gerar sugestões usando o agente inteligente
-    suggestions = rephrase_agent.generate_suggestions(
-        question=question,
-        documents=documents,
-        verdict_reason=verdict_reason,
-        intent=intent
-    )
-    # Formatar sugestões para exibição
-    formatted_suggestions = '\n'.join([f'• "{sugg}"' for sugg in suggestions])
-    
+
+    new_query = rephrase_agent.rephrase(question)
+
     intelligent_response = f"""
-    🤔 **Não consegui dar uma resposta totalmente precisa, mas tenho sugestões!**
+🤔 **Não consegui dar uma resposta totalmente precisa, mas tenho sugestões!**
 
-    Você perguntou: "{question}"
+Você perguntou: "{question}"
 
-    📝 **Tente reformular assim:**
-    {formatted_suggestions}
+📝 **Tente reformular assim:**
+{new_query}
 
-    💡 **Por que essas sugestões?** Baseei-me nos documentos que encontrei e na terminologia jurídica mais adequada para sua pergunta.
-
-    ❓ **Escolha uma das sugestões acima** ou reformule usando termos similares.
-    """
+💡 **Por que essas sugestões?** Baseei-me nos documentos que encontrei e na terminologia jurídica mais adequada para sua pergunta.
+"""
 
     return {"answer": intelligent_response}
 
@@ -175,6 +164,7 @@ def build_graph():
     workflow = StateGraph(GraphState)
     
     workflow.add_node("supervisor", supervisor_node)
+    workflow.add_node("query_expander", query_expander_node)
     workflow.add_node("retriever", retrieve_node)
     workflow.add_node("answerer", answer_node)
     workflow.add_node("self_check", self_check_node)
@@ -189,10 +179,11 @@ def build_graph():
         route_after_supervisor,
         {
             "clarification": "clarification",
-            "retrieve": "retriever"
+            "query_expander": "query_expander"
         }
     )
     
+    workflow.add_edge("query_expander", "retriever")
     workflow.add_edge("retriever", "answerer")
     workflow.add_edge("answerer", "self_check")
     
