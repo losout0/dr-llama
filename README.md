@@ -25,7 +25,7 @@ Seu assistente de IA para informações sobre a legislação brasileira.
 
 O acesso à informação jurídica no Brasil é um desafio para o cidadão comum. A linguagem técnica e a estrutura complexa das leis dificultam a compreensão de direitos e deveres básicos.
 
-O objetivo do **Dr. Llama** é mitigar esse problema, oferecendo uma interface conversacional que responde a perguntas sobre a legislação brasileira com base em fontes oficiais. O sistema utiliza técnicas de RAG para evitar alucinações e garantir que todas as respostas sejam fundamentadas e citem os artigos de lei correspondentes.
+O objetivo do **Dr. Llama** é mitigar esse problema, oferecendo uma interface conversacional que responde a perguntas sobre os direitos do consumidor com base em fontes oficiais. O sistema utiliza técnicas de RAG para evitar alucinações e garantir que todas as respostas sejam fundamentadas e citem os artigos de lei correspondentes.
 
 ## ✨ Funcionalidades
 
@@ -34,7 +34,7 @@ O objetivo do **Dr. Llama** é mitigar esse problema, oferecendo uma interface c
 - 🔗 **Citações de Fontes:** Cada resposta inclui referências explícitas aos artigos de lei utilizados, permitindo a verificação da informação.
 - 🤖 **Orquestração com Agentes (LangGraph):** Um grafo de agentes gerencia o fluxo da conversa, desde a recuperação da informação até a checagem de segurança e formatação da resposta.
 - ✅ **Checagem Anti-Alucinação:** Um agente _SelfCheck_ valida se as informações na resposta estão de fato presentes nos documentos recuperados.
-- ⚙️ **100% Open-Source e Local:** Utiliza modelos de LLM open-weights (via Ollama) e bancos de vetores locais (FAISS), garantindo privacidade e total controle sobre o sistema.
+- ⚙️ **100% Open-Source e Local*:** Utiliza modelos de LLM open-weights (via Ollama) e bancos de vetores locais (FAISS), garantindo privacidade e total controle sobre o sistema.
 
 ## 🏗️ Arquitetura
 
@@ -42,24 +42,31 @@ O Dr. Llama é orquestrado pelo **LangGraph**, que coordena uma equipe de agente
 
 ```mermaid
 graph TD
-    A[Usuário via UI Streamlit] --> B{LangGraph Supervisor};
-    B --> C[1. RetrieverAgent];
-    C --> D[VectorStore FAISS];
-    C --> B;
-    B --> E[2. AnswerAgent];
-    E --> F[LLM via Ollama];
-    E --> B;
-    B --> G[3. SelfCheckAgent];
-    G -- Evidência OK --> H[4. SafetyAgent];
-    G -- Evidência Insuficiente --> E;
-    H --> I[Resposta Final com Citações e Disclaimer];
-    I --> A;
+    UI[Streamlit UI]
+    SUP[Supervisor Agent]
+    QEA[Query Expander Agent]
+    RET[Retriever Agent]
+    ANS[Answer Agent]
+    SELF[Self-Check Agent]
+    SAFE[Safety/Policy Agent]
+    VEC[VectorStore (Chroma/FAISS)]
+    LLM[LLM via Ollama]
+    UI --> SUP
+    SUP --> QEA
+    QEA --> RET
+    RET --> VEC
+    RET --> ANS
+    ANS --> LLM
+    ANS --> SELF
+    SELF --> SAFE
+    SAFE --> UI
 ```
 
 - **UI (Streamlit):** Interface web onde o usuário interage com o sistema.
 - **LangGraph Supervisor:** O "maestro" que roteia a tarefa entre os diferentes agentes com base no estado atual da conversa.
 - **RetrieverAgent:** Responsável por buscar os trechos de lei mais relevantes para a pergunta do usuário no banco de vetores FAISS.
 - **AnswerAgent:** Gera uma resposta em linguagem natural, utilizando o contexto fornecido pelo RetrieverAgent e citando as fontes.
+- **RephraseAgent:** Tenta reescrever a resposta em termos juridicos para dar um exemplo ao usuário.
 - **SelfCheckAgent:** Compara a resposta gerada com os documentos originais para garantir a fidelidade e evitar a invenção de informações.
 - **SafetyAgent:** Adiciona o disclaimer legal a todas as respostas, reforçando o caráter informativo da ferramenta.
 
@@ -70,7 +77,7 @@ graph TD
 ### Pré-requisitos
 
 - Git
-- Python 3.10+
+- Python 3.12+
 - Docker
 - Ollama
 
@@ -79,11 +86,16 @@ graph TD
 1. **Clone o repositório:**
 
 ```bash
-git clone https://github.com/SEU-USUARIO/dr-llama.git
+git clone https://github.com/losout0/dr-llama.git
 cd dr-llama
 ```
 
-2. **Configure o Ollama e baixe o LLM:**
+2. **Configure o arquivo config/.env**
+
+- Faça uma cópia do `.env.example` e renomeie para `.env`.
+- Configure o `LLM_PROVIDER`, `LLM_MODEL` e as `API_KEYS` (Caso queira usar por chamada de API).
+
+3. **Configure o Ollama e baixe o LLM:**
 
 - Siga as instruções para instalar o Ollama no seu sistema.
 - Baixe o modelo Llama 3.1:
@@ -92,7 +104,7 @@ cd dr-llama
 ollama pull llama3.1:8b
 ```
 
-3. **Crie um ambiente virtual e instale as dependências:**
+4. **Crie um ambiente virtual e instale as dependências:**
 
 ```Bash
 python -m venv .venv
@@ -100,7 +112,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-4. **Prepare os dados e o banco de vetores:**
+5. **Prepare os dados e o banco de vetores:**
 
 - Adicione os arquivos de lei (ex: constituicao.pdf, cdc.pdf) na pasta /data/raw.
 - Execute o script de ingestão para criar o índice FAISS:
@@ -109,7 +121,7 @@ pip install -r requirements.txt
 python ingest/ingest_data.py
 ```
 
-5. **Inicie a aplicação:**
+6. **Inicie a aplicação:**
 
 ```Bash
 streamlit run app/app.py
@@ -134,27 +146,37 @@ docker run -p 8501:8501 dr-llama
 
 ```bash
 /dr-llama
-|
-├── .github/workflows/      # Pipelines de CI/CD
-├── app/                    # Código da interface Streamlit
-├── data/                   # Dados brutos (PDFs) e processados
-├── ingest/                 # Scripts para processamento e indexação dos dados
-├── src/                    # Lógica principal: agentes, grafo, etc.
-├── eval/                   # Scripts e relatórios de avaliação (RAGAS)
-├── tests/                  # Testes unitários e de integração
-|
-├── .gitignore
-├── Dockerfile              # Containerização da aplicação
-├── LICENSE
-├── README.md
-└── requirements.txt        # Dependências Python
+├── app/                    # Aplicação Streamlit (front-end)
+│   └── app.py      
+├── config/                 # Configurações para a geração da instância LLM
+│   └── .env      
+├── data/                   # Dados brutos (PDF/HTML do CDC) e vetores indexados
+│   └── raw/      
+├── eval/                   # Scripts, perguntas-teste e relatórios de avaliação
+│   ├── test_questions.json
+│   ├── evaluate_rag.py
+│   └── evaluation/
+│       └── latest          # Resultados da última análise
+├── ingest/                 # Scripts e utilitários de ingestão e indexação de dados
+│   └── ingest_data.py      
+├── notebooks/              # Notebook para testes manuais
+│   └── test_agents.ipynb
+├── src/                    # Código-fonte principal (pipelines, agentes, utilitários)
+│   ├── agents/      
+│   ├── utils/      
+│   └── graph.py
+├── .gitignore              
+├── Dockerfile              # Containerização do ambiente
+├── LICENSE                 # Licença aberta (MIT)
+└── README.md               # Este arquivo
+├── requirements.txt        # Dependências do projeto
 ```
 
 ### 📊 Avaliação
 
 A qualidade do sistema é medida utilizando o framework **RAGAS**. Nosso processo de avaliação inclui:
 
-- Um conjunto de **20-30 perguntas** de teste com respostas de referência, localizadas em `eval/test_questions.json`.
+- Um conjunto de **20 perguntas** de teste com respostas de referência, localizadas em `eval/test_questions.json`.
 - Métricas principais: `Faithfulness`, `Answer Relevancy`, `Context Precision` e `Context Recall`.
 - Os resultados detalhados e a análise crítica da performance estão disponíveis no relatório `eval/report.md`.
 
