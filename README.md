@@ -9,13 +9,16 @@ Seu assistente de IA para informações sobre a legislação brasileira.
 ## 📜 Índice
 
 - [🎯Problema e Objetivo](#-problema-e-objetivo)
+  - [📚Fontes do corpus](#-fontes-do-corpus)
+  - [📂Estrutura do Repositório](#-estrutura-do-repositório)
 - [✨Funcionalidades](#-funcionalidades)
 - [🏗️Arquitetura](#️-arquitetura)
 - [🚀Como Executar Localmente](#-como-executar-localmente)
   - [Pré-requisitos](#-pré-requisitos)
   - [Instalação](#-instalação)
   - [Executando com Docker](#-executando-com-docker)
-- [📂Estrutura do Repositório](#-estrutura-do-repositório)
+- [💬Exemplos de perguntas](#-exemplos-de-perguntas)
+  - [🔎Formato das respostas](#-formato-das-respostas)
 - [📊Avaliação](#-avaliação)
 - [⚖️Limitações Éticas e de Segurança](#-limitações-éticas-e-de-segurança)
 - [🗺️Roadmap (Próximos Passos)](#-roadmap-próximos-passos)
@@ -27,6 +30,42 @@ O acesso à informação jurídica no Brasil é um desafio para o cidadão comum
 
 O objetivo do **Dr. Llama** é mitigar esse problema, oferecendo uma interface conversacional que responde a perguntas sobre os direitos do consumidor com base em fontes oficiais. O sistema utiliza técnicas de RAG para evitar alucinações e garantir que todas as respostas sejam fundamentadas e citem os artigos de lei correspondentes.
 
+### 📚 Fontes do corpus
+
+- [Constituição Federal de 1988](https://www2.senado.leg.br/bdsf/bitstream/handle/id/685819/CF88_EC135_2025_separata.pdf)
+- [Código de Defesa do Consumidor (CDC) com normas correlatas](https://www2.senado.leg.br/bdsf/bitstream/handle/id/533814/cdc_e_normas_correlatas_2ed.pdf)
+- Metadados por artigo: cada chunk inclui artigo, página e nome legível da fonte
+
+### 📂 Estrutura do Repositório
+
+```bash
+/dr-llama
+├── app/                    # Aplicação Streamlit (front-end)
+│   └── app.py
+├── config/                 # Configurações para a geração da instância LLM
+│   └── .env
+├── data/                   # Dados brutos (PDF/HTML do CDC) e vetores indexados
+│   └── raw/
+├── eval/                   # Scripts, perguntas-teste e relatórios de avaliação
+│   ├── test_questions.json
+│   ├── evaluate_rag.py
+│   └── evaluation/
+│       └── latest          # Resultados da última análise
+├── ingest/                 # Scripts e utilitários de ingestão e indexação de dados
+│   └── ingest_data.py
+├── notebooks/              # Notebook para testes manuais
+│   └── test_agents.ipynb
+├── src/                    # Código-fonte principal (pipelines, agentes, utilitários)
+│   ├── agents/
+│   ├── utils/
+│   └── graph.py
+├── .gitignore
+├── Dockerfile              # Containerização do ambiente
+├── LICENSE                 # Licença aberta (MIT)
+├── README.md               # Este arquivo
+└── requirements.txt        # Dependências do projeto
+```
+
 ## ✨ Funcionalidades
 
 - 💬 **Interface Conversacional:** Dialogue com o sistema em linguagem natural.
@@ -34,7 +73,7 @@ O objetivo do **Dr. Llama** é mitigar esse problema, oferecendo uma interface c
 - 🔗 **Citações de Fontes:** Cada resposta inclui referências explícitas aos artigos de lei utilizados, permitindo a verificação da informação.
 - 🤖 **Orquestração com Agentes (LangGraph):** Um grafo de agentes gerencia o fluxo da conversa, desde a recuperação da informação até a checagem de segurança e formatação da resposta.
 - ✅ **Checagem Anti-Alucinação:** Um agente _SelfCheck_ valida se as informações na resposta estão de fato presentes nos documentos recuperados.
-- ⚙️ **100% Open-Source e Local*:** Utiliza modelos de LLM open-weights (via Ollama) e bancos de vetores locais (FAISS), garantindo privacidade e total controle sobre o sistema.
+- ⚙️ **100% Open-Source e Local\*:** Utiliza modelos de LLM open-weights (via Ollama) e bancos de vetores locais (FAISS), garantindo privacidade e total controle sobre o sistema.
 
 ## 🏗️ Arquitetura
 
@@ -66,7 +105,7 @@ graph TD
 - **LangGraph Supervisor:** O "maestro" que roteia a tarefa entre os diferentes agentes com base no estado atual da conversa.
 - **RetrieverAgent:** Responsável por buscar os trechos de lei mais relevantes para a pergunta do usuário no banco de vetores FAISS.
 - **AnswerAgent:** Gera uma resposta em linguagem natural, utilizando o contexto fornecido pelo RetrieverAgent e citando as fontes.
-- **RephraseAgent:** Tenta reescrever a resposta em termos juridicos para dar um exemplo ao usuário.
+- **RephraseAgent:** reformula a pergunta em 1 linha quando a resposta não atinge fidelidade suficiente.
 - **SelfCheckAgent:** Compara a resposta gerada com os documentos originais para garantir a fidelidade e evitar a invenção de informações.
 - **SafetyAgent:** Adiciona o disclaimer legal a todas as respostas, reforçando o caráter informativo da ferramenta.
 
@@ -142,37 +181,28 @@ docker build -t dr-llama .
 docker run -p 8501:8501 dr-llama
 ```
 
-### 📂 Estrutura do Repositório
+## 💬 Exemplos de perguntas
 
-```bash
-/dr-llama
-├── app/                    # Aplicação Streamlit (front-end)
-│   └── app.py      
-├── config/                 # Configurações para a geração da instância LLM
-│   └── .env      
-├── data/                   # Dados brutos (PDF/HTML do CDC) e vetores indexados
-│   └── raw/      
-├── eval/                   # Scripts, perguntas-teste e relatórios de avaliação
-│   ├── test_questions.json
-│   ├── evaluate_rag.py
-│   └── evaluation/
-│       └── latest          # Resultados da última análise
-├── ingest/                 # Scripts e utilitários de ingestão e indexação de dados
-│   └── ingest_data.py      
-├── notebooks/              # Notebook para testes manuais
-│   └── test_agents.ipynb
-├── src/                    # Código-fonte principal (pipelines, agentes, utilitários)
-│   ├── agents/      
-│   ├── utils/      
-│   └── graph.py
-├── .gitignore              
-├── Dockerfile              # Containerização do ambiente
-├── LICENSE                 # Licença aberta (MIT)
-├── README.md               # Este arquivo
-└── requirements.txt        # Dependências do projeto
+- O que é venda casada?
+- Tenho direito ao preço menor quando etiqueta e caixa divergem?
+- O que caracteriza propaganda enganosa no CDC?
+- Qual é o prazo de arrependimento em compras online?
+- Qual o prazo de garantia legal para defeito aparente?
+- Posso ser obrigado a pagar consumação mínima?
+- Quais são os direitos em caso de vício oculto?
+- O que é oferta vinculante segundo o CDC?
+- Como denunciar práticas abusivas?
+- O que fazer se a entrega atrasar além do prometido?
+
+### 🔎 Formato das respostas
+
+As respostas incluem citações inline ao final de cada parágrafo assertivo, por exemplo:
 ```
+“Venda casada é vedada pelo CDC, configurando prática abusiva ao condicionar a venda de um produto/serviço à compra de outro não desejado. [Fonte: Código de Defesa do Consumidor, art. 39]”
+```
+Na seção “Fontes” da interface, são exibidos os trechos dos documentos recuperados com nome da obra e artigo.
 
-### 📊 Avaliação
+## 📊 Avaliação
 
 A qualidade do sistema é medida utilizando o framework **RAGAS**. Nosso processo de avaliação inclui:
 
@@ -180,20 +210,20 @@ A qualidade do sistema é medida utilizando o framework **RAGAS**. Nosso process
 - Métricas principais: `Faithfulness`, `Answer Relevancy`, `Context Precision` e `Context Recall`.
 - Os resultados detalhados e a análise crítica da performance estão disponíveis no relatório `eval/report.md`.
 
-### ⚖️ Limitações Éticas e de Segurança
+## ⚖️ Limitações Éticas e de Segurança
 
 - **NÃO é Aconselhamento Jurídico:** Dr. Llama é uma ferramenta de informação, não um consultor legal. As respostas não criam uma relação advogado-cliente.
 - **Informação Potencialmente Desatualizada**: O corpus de conhecimento é estático e baseado nos documentos fornecidos na data da ingestão. Leis podem ser alteradas.
 - **Sem Garantia de Precisão**: Embora utilize RAG para mitigar alucinações, erros de interpretação ou recuperação podem ocorrer. Sempre verifique as fontes citadas.
 - **Complexidade do Caso**: O sistema não considera as nuances e particularidades de um caso real, que são essenciais para uma orientação jurídica adequada.
 
-### 🗺️ Roadmap (Próximos Passos)
+## 🗺️ Roadmap (Próximos Passos)
 
 - [ ] **Expandir o Corpus:** Incluir mais documentos legais (CLT, Código Civil, etc.).
 - [ ] **Melhorar o Retrieval:** Implementar técnicas de re-ranking (Cross-Encoders) para melhorar a relevância dos documentos.
 - [ ] **Avaliação Contínua:** Criar um workflow de CI/CD que rode a suíte de avaliação a cada mudança no código.
 - [ ] **Deploy:** Publicar a aplicação em uma plataforma como Hugging Face Spaces ou Streamlit Community Cloud.
 
-### 📄 Licença
+## 📄 Licença
 
 Este projeto está sob a licença APACHE 2.0. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
