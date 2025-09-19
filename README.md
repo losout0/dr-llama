@@ -20,6 +20,11 @@ Seu assistente de IA para informações sobre a legislação brasileira.
 - [💬Exemplos de perguntas](#-exemplos-de-perguntas)
   - [🔎Formato das respostas](#-formato-das-respostas)
 - [📊Avaliação](#-avaliação)
+  - [Requisitos]()
+  - [Formato do dataset de teste]()
+  - [Como executar o teste]()
+  - [Artefatos gerados]()
+  - [Notas]()
 - [⚖️Limitações Éticas e de Segurança](#-limitações-éticas-e-de-segurança)
 - [🗺️Roadmap (Próximos Passos)](#-roadmap-próximos-passos)
 - [📄Licença](#-licença)
@@ -197,9 +202,11 @@ docker run -p 8501:8501 dr-llama
 ### 🔎 Formato das respostas
 
 As respostas incluem citações inline ao final de cada parágrafo assertivo, por exemplo:
+
 ```
 “Venda casada é vedada pelo CDC, configurando prática abusiva ao condicionar a venda de um produto/serviço à compra de outro não desejado. [Fonte: Código de Defesa do Consumidor, art. 39]”
 ```
+
 Na seção “Fontes” da interface, são exibidos os trechos dos documentos recuperados com nome da obra e artigo.
 
 ## 📊 Avaliação
@@ -209,6 +216,65 @@ A qualidade do sistema é medida utilizando o framework **RAGAS**. Nosso process
 - Um conjunto de **20 perguntas** de teste com respostas de referência, localizadas em `eval/test_questions.json`.
 - Métricas principais: `Faithfulness`, `Answer Relevancy`, `Context Precision` e `Context Recall`.
 - Os resultados detalhados e a análise crítica da performance estão disponíveis no relatório `eval/report.md`.
+
+### Requisitos do teste
+
+- Python com dependências instaladas (datasets, pandas); RAGAS é opcional e, se ausente, o script usa um fallback de avaliação manual.
+- Índice FAISS já criado (rodar ingestão antes).
+
+### Formato do dataset de teste
+
+Coloque um JSON em `eval/test-questions.json` com uma lista ou um objeto `{"questions": [...]}` contendo itens no formato:
+
+```JSON
+{
+"questions": [
+{
+"id": 1,
+"question": "O que é venda casada?",
+"ground_truth": "Definição correta conforme CDC.",
+"category": "consumidor",
+"difficulty": "medio"
+}
+]
+}
+```
+
+- Campos obrigatórios: `question` e `ground_truth`.
+- Campos opcionais: `id`, `category`, `difficulty`.
+
+**Observação:** o caminho padrão carregado pelo script é `eval/test-questions.json` (com hífen), então mantenha esse nome para evitar erro.
+
+### Como executar o teste
+
+A partir da raiz do projeto, rode:
+
+```bash
+python eval/evaluate_rag.py
+```
+
+O script irá:
+
+1. Carregar `eval/test-questions.json`.
+2. Invocar o grafo para cada pergunta e registrar tempo e documentos recuperados.
+3. Rodar RAGAS (se instalado) com o LLM da factory; caso contrário, aplicar avaliação manual com heurísticas de fidelidade e relevância.
+4. Salvar todos os artefatos em `eval/evaluation/results/run_YYYYMMDD_HHMMSS` e atualizar o link `eval/evaluation/results/latest`.
+
+### Artefatos gerados
+
+Na pasta da execução (`eval/evaluation/results/run_...`) você encontrará:
+
+- `report.md`: relatório consolidado com métricas e análise por categoria.
+- `results.csv`: respostas, tempos e status por pergunta.
+- `metrics.json`: métricas RAGAS (quando disponíveis) e métricas customizadas.
+- `config.json`: metadados da execução (timestamp, método de avaliação, etc.).
+
+Para acessar rapidamente a última execução, abra [`eval/evaluation/results/latest/report.md`](eval/evaluation/results/latest/report.md).
+
+### Notas
+
+- O avaliador usa o mesmo LLM configurado na sua factory (`create_llm`), inclusive para a etapa RAGAS, garantindo consistência entre inferência e avaliação.
+- Se precisar mudar o caminho do dataset, ajuste o parâmetro padrão em `load_test_questio
 
 ## ⚖️ Limitações Éticas e de Segurança
 

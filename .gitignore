@@ -212,4 +212,4 @@ __marimo__/
 # Bancos de vetores e outros artefatos de dados gerados
 vectorstores/
 data/raw/
-evaluation/
+eval/evaluation/results/run*/
