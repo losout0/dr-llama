@@ -24,12 +24,10 @@ class SupervisorAgent:
         if deterministic_result is not None:
             # Se as heurísticas são conclusivas, usa elas
             intent = self._classify_intent_simple(question)
-            expanded_queries = self._generate_queries_simple(question, intent)
             
             return {
                 "intent": intent,
                 "needs_clarification": deterministic_result,
-                "expanded_queries": expanded_queries,
                 "confidence": "alta" if not deterministic_result else "baixa",
                 "method": "deterministic"
             }
@@ -114,53 +112,6 @@ class SupervisorAgent:
             return "constitucional"
         else:
             return "consumidor"  # default
-    
-    def _generate_queries_simple(self, question: str, intent: str) -> List[str]:
-        """Geração simples de queries baseada em padrões"""
-        q_lower = question.lower()
-
-        if "propaganda enganosa" in q_lower:
-            return [
-                "propaganda enganosa definição código consumidor",
-                "artigo 37 CDC publicidade enganosa",
-                "tipos propaganda enganosa omissão comissão"
-            ]
-        elif "venda casada" in q_lower:
-            return [
-                "venda casada definição CDC artigo 39",
-                "prática abusiva venda condicionada",
-                "venda casada proibição código consumidor"
-            ]
-        elif "dois preços" in q_lower or "prática abusiva" in q_lower:
-            return [
-                "prática abusiva código consumidor artigo 39",
-                "dois preços mesmo produto é abusivo",
-                "direitos consumidor práticas abusivas"
-            ]
-        elif "o que é" in q_lower or "me fale sobre" in q_lower:
-            # Para perguntas conceituais genéricas
-            concept = q_lower.replace("o que é", "").replace("me fale sobre", "").replace("?", "").strip()
-            return [
-                f"{concept} definição código consumidor",
-                f"{concept} direito consumidor",
-                f"{concept} legislação brasileira"
-            ]
-
-        # Casos situacionais (já existentes)
-        elif "preço" in q_lower and ("diferente" in q_lower or "caixa" in q_lower):
-            return [
-                "divergência preço anunciado cobrado código consumidor",
-                "oferta vinculante artigo 30 CDC",
-                "direito preço menor anunciado estabelecimento"
-            ]
-        elif "defeituoso" in q_lower:
-            return [
-                "produto defeituoso troca prazo CDC",
-                "vício produto garantia legal",
-                "direito consumidor produto com defeito"
-            ]
-        else:
-            return [question]
     
     def _llm_analysis(self, question: str) -> Dict:
         """Análise via LLM para casos não-determinísticos"""
