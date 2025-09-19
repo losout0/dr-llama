@@ -49,7 +49,7 @@ graph TD
     ANS[Answer Agent]
     SELF[Self-Check Agent]
     SAFE[Safety/Policy Agent]
-    VEC[VectorStore (Chroma/FAISS)]
+    VEC[VectorStore]
     LLM[LLM via Ollama]
     UI --> SUP
     SUP --> QEA
