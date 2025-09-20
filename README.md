@@ -47,6 +47,8 @@ O objetivo do **Dr. Llama** é mitigar esse problema, oferecendo uma interface c
 /dr-llama
 ├── app/                    # Aplicação Streamlit (front-end)
 │   └── app.py
+├── apresentacao/           # Apresentação de slides com motivação e resumo da documentação
+│   └── Dr. Llama - Apresentação.pdf
 ├── config/                 # Configurações para a geração da instância LLM
 │   └── .env
 ├── data/                   # Dados brutos (PDF/HTML do CDC) e vetores indexados
@@ -293,3 +295,4 @@ Para acessar rapidamente a última execução, abra [`eval/evaluation/results/la
 ## 📄 Licença
 
 Este projeto está sob a licença APACHE 2.0. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
